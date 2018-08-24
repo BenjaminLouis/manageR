@@ -1,0 +1,6 @@
+if (!require(shiny)) install.packages('shiny'); library(shiny)
+if (!require(shinyjs)) install.packages('shinyjs'); library(shinyjs)
+if (!require(shinyFiles)) install.packages('shinyFiles'); library(shinyFiles)
+if (!require(tidyverse)) install.packages('tidyverse'); library(tidyverse)
+if (!require(DT)) install.packages('DT'); library(DT)
+if (!require(data.table)) install.packages('data.table'); library(data.table)
