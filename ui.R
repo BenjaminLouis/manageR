@@ -1,46 +1,26 @@
-ui <- fluidPage(useShinyjs(),
-                #includeCSS("styles.css"),
-                
-                # App title ----
-                titlePanel("ManageR"),
-                
-                # Sidebar layout with input and output definitions ----
-                sidebarLayout(
-                  
-                  # Sidebar panel for inputs ----
-                  sidebarPanel(
-                    
-                    # Working directory choice
-                    h4("Working directory")
-
-                  ),
-                  
-                  # Main panel for displaying outputs ----
-                  mainPanel(
-                    
-                    # Output: Tabset w/ plot, summary, and table ----
-                    tabsetPanel(type = "tabs",
-                                tabPanel("Estimates"
-
-                                ),
-                                tabPanel("Invoices"
-                                         
-                                ),
-                                tabPanel("Budget"
-                                         
-                                ),
-                                tabPanel("Clients"
-                                         
-                                ),
-                                tabPanel("Billing addresses"
-                                         
-                                ),
-                                tabPanel("Missions"
-                                         
-                                )
-                    )
-                    
-                  )
-                )
-                
+ui <- dashboardPage(
+  #useShinyjs(),
+  #includeCSS("styles.css"),
+  
+  dashboardHeader(title = "ManageR"),
+  
+  dashboardSidebar(
+    menuItem("Estimates", tabName = "estimates", icon = icon("money-check")),
+    menuItem("Bills", tabName = "bills", icon = icon("money-bill-wave")),
+    menuItem("Budget", tabName = "budget", icon = icon("euro-sign")),
+    menuItem("Clients", tabName = "clients", icon = icon("address-card")),
+    menuItem("Billing addresses", tabName = "addresses", icon = icon("envelope")),
+    menuItem("Missions", tabName = "missions", icon = icon("briefcase"))
+  ),
+  
+  dashboardBody(
+    tabItems(
+      tabItem(tabName = "estimates"),
+      tabItem(tabName = "bills"),
+      tabItem(tabName = "budget"),
+      tabItem(tabName = "clients"),
+      tabItem(tabName = "addresses"),
+      tabItem(tabName = "missions")
+    )
+  )
 )
