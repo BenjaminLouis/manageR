@@ -1,10 +1,10 @@
 ui <- dashboardPage(
-  #useShinyjs(),
   #includeCSS("styles.css"),
   
   dashboardHeader(title = "ManageR"),
   
   dashboardSidebar(
+    menuItem("Home", tabName = "home", icon = icon("money-check")),
     menuItem("Estimates", tabName = "estimates", icon = icon("money-check")),
     menuItem("Bills", tabName = "bills", icon = icon("money-bill-wave")),
     menuItem("Budget", tabName = "budget", icon = icon("euro-sign")),
@@ -14,13 +14,30 @@ ui <- dashboardPage(
   ),
   
   dashboardBody(
+    useShinyjs(),
     tabItems(
-      tabItem(tabName = "estimates"),
-      tabItem(tabName = "bills"),
-      tabItem(tabName = "budget"),
-      tabItem(tabName = "clients"),
-      tabItem(tabName = "addresses"),
-      tabItem(tabName = "missions")
+      tabItem(
+        tabName = "home",
+        wdLoadUI("wd")
+        ),
+      tabItem(
+        tabName = "estimates"
+        ),
+      tabItem(
+        tabName = "bills"
+        ),
+      tabItem(
+        tabName = "budget"
+        ),
+      tabItem(
+        tabName = "clients"
+        ),
+      tabItem(
+        tabName = "addresses"
+        ),
+      tabItem(
+        tabName = "missions"
+        )
     )
   )
 )
