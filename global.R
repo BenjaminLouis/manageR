@@ -6,6 +6,8 @@ if (!require(DT)) install.packages('DT'); library(DT)
 if (!require(data.table)) install.packages('data.table'); library(data.table)
 if (!require(shinydashboard)) install.packages('shinydashboard'); library(shinydashboard)
 
+## wdLoad
+
 wdLoadUI <- function(id) {
   
   ns <- NS(id)
@@ -23,3 +25,47 @@ wdLoad <- function(input, output, session) {
   })
   reactive({parseDirPath(c(wd = getwd()), input$dir)})
 }
+
+## loadingOptions
+
+loadingOptionsInput <- function(id) {
+  
+  ns <- NS(id)
+  
+  tagList(
+    fluidRow(
+      column(width = 6,
+             radioButtons(inputId = ns("sep"), label = "Separation", selected = ";",
+                          choices = c(Virgule = ",", 'Point Virgule' = ";", Tabulation = "\t"))
+             
+      ),
+      column(width = 6,
+             checkboxInput(inputId = ns("header"), label = "Header ?", value = TRUE)
+      )
+    )
+  )
+}
+
+loadingOptions <- function(input, output, session, path, filename) {
+  reactive({
+    do.call(read_delim, args = list(file = paste0(path(), "/", filename), col_names = input$header,
+                                   col_types = cols(.default = col_character()),
+                                   delim = input$sep))
+  })
+}
+
+## showData
+
+showDataUI <- function(id) {
+  ns <- NS(id)
+  tagList(
+    DT::dataTableOutput(ns("data"))
+  )
+}
+
+showData <- function(input, output, session, data) {
+  output$data <- DT::renderDataTable(data())
+}
+
+
+

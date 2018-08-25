@@ -18,10 +18,13 @@ ui <- dashboardPage(
     tabItems(
       tabItem(
         tabName = "home",
-        wdLoadUI("wd")
+        wdLoadUI("wd"),
+        br(),
+        loadingOptionsInput("files")
         ),
       tabItem(
-        tabName = "estimates"
+        tabName = "estimates",
+        showDataUI("devis")
         ),
       tabItem(
         tabName = "bills"
