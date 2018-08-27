@@ -59,12 +59,12 @@ loadingOptions <- function(input, output, session, path, filename) {
 showDataUI <- function(id) {
   ns <- NS(id)
   tagList(
-    DT::dataTableOutput(ns("data"))
+    dataTableOutput(ns("data"))
   )
 }
 
 showData <- function(input, output, session, data) {
-  output$data <- DT::renderDataTable(data())
+  output$data <- renderDataTable(data())
 }
 
 
