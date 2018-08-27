@@ -33,7 +33,8 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "bills",
-        h4("Bills management")
+        h4("Bills management"),
+        showDataUI("factures")
       ),
       tabItem(
         tabName = "budget",
@@ -41,11 +42,13 @@ ui <- dashboardPage(
       ),
       tabItem(
         tabName = "clients",
-        h4("Clients informations")
+        h4("Clients informations"),
+        showDataUI("clients")
       ),
       tabItem(
         tabName = "addresses",
-        h4("Billing addresses information")
+        h4("Billing addresses information"),
+        showDataUI("facturations")
       ),
       tabItem(
         tabName = "missions",

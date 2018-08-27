@@ -6,4 +6,7 @@ server <- function(input, output, session) {
   facturations <- callModule(loadingOptions, "files", path = path, filename = "Facturations.csv")
   prestations <- callModule(loadingOptions, "files", path = path, filename = "Prestations.csv")
   callModule(showData, "devis", data = devis)
+  callModule(showData, "factures", data = factures)
+  callModule(showData, "clients", data = clients)
+  callModule(showData, "facturations", data = facturations)
 }
