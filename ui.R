@@ -33,7 +33,7 @@ ui <- dashboardPage(
         h4("Welcome to manageR !!"),
         wdLoadUI("wd"),
         br(),
-        loadingOptionsInput("files")
+        loadingOptionsUI("files")
       ),
       
       # Cost estimates tab

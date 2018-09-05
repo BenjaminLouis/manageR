@@ -26,7 +26,7 @@ wdLoad <- function(input, output, session) {
 
 ## loadingOptions
 
-loadingOptionsInput <- function(id) {
+loadingOptionsUI <- function(id) {
   
   ns <- NS(id)
   
