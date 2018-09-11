@@ -9,4 +9,5 @@ server <- function(input, output, session) {
   callModule(showData, "factures", data = factures)
   callModule(showData, "clients", data = clients)
   callModule(showData, "facturations", data = facturations)
+  callModule(addData, "clients", data = clients, ncol = 3)
 }

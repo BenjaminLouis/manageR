@@ -88,7 +88,17 @@ ui <- dashboardPage(
       tabItem(
         tabName = "clients",
         h4("Clients informations"),
-        showDataUI("clients")
+        tabsetPanel(
+          selected = "Table",
+          tabPanel(
+            title = "Table",
+            showDataUI("clients")
+          ),
+          tabPanel(
+            title = "Add client",
+            addDataUI("clients")
+          )
+        )
       ),
       
       # Billing adresses tab

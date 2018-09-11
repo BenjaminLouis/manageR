@@ -65,5 +65,32 @@ showData <- function(input, output, session, data) {
   output$data <- renderDataTable(data())
 }
 
+## addData
+
+addDataUI <- function(id) {
+  ns <- NS(id)
+  tagList(
+    uiOutput(ns("adddata"))
+  )
+  
+}
+
+addData <- function(input, output, session, data, ncol = 3) {
+  tofill <- names(data())
+  nrow <- ceiling(length(tofill)/ncol)
+  ll <-     lapply(1:nrow, function(i) {
+    fluidRow(
+      lapply(1:ncol, function(j) {
+        if (j + ncol*(i-1) <= length(tofill)) {
+          column(with = 12/ncol, textInput(inputId = paste0("col",j + ncol*(i-1)), label = tofill[j + ncol*(i-1)]))
+        }
+      })
+    )
+  })
+  output$adddata <- renderUI({
+    tagList(ll)
+  })
+}
+
 
 
