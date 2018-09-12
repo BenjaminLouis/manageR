@@ -69,25 +69,25 @@ showData <- function(input, output, session, data) {
 
 addDataUI <- function(id) {
   ns <- NS(id)
-  tagList(
-    uiOutput(ns("adddata"))
-  )
-  
+  uiOutput(ns("adddata"))
 }
 
-addData <- function(input, output, session, data, ncol = 3) {
-  tofill <- names(data())
-  nrow <- ceiling(length(tofill)/ncol)
-  ll <-     lapply(1:nrow, function(i) {
-    fluidRow(
-      lapply(1:ncol, function(j) {
-        if (j + ncol*(i-1) <= length(tofill)) {
-          column(with = 12/ncol, textInput(inputId = paste0("col",j + ncol*(i-1)), label = tofill[j + ncol*(i-1)]))
-        }
-      })
-    )
-  })
+addData <- function(input, output, session, data, ncol = 4) {
   output$adddata <- renderUI({
+    df <- data()
+    tofill <- names(df)
+    nrow <- ceiling(length(tofill)/ncol)
+    #ll <- replicate(nrow, fluidRow())
+    ns <- session$ns  
+    ll <- lapply(1:nrow, function(i) {
+      row <- fluidRow()
+      for (j in 1:ncol) {
+        if (j + ncol*(i - 1) <= length(tofill)) {
+          row <- tagAppendChild(row, column(width = floor(12/ncol), textInput(inputId = ns(paste0("col",j + ncol*(i - 1))), label = tofill[j + ncol*(i - 1)])))
+        }
+      }
+      return(row)
+    })
     tagList(ll)
   })
 }

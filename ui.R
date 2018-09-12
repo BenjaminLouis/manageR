@@ -106,7 +106,17 @@ ui <- dashboardPage(
       tabItem(
         tabName = "addresses",
         h4("Billing addresses information"),
-        showDataUI("facturations")
+        tabsetPanel(
+          selected = "Table",
+          tabPanel(
+            title = "Table",
+            showDataUI("facturations")
+          ),
+          tabPanel(
+            title = "Add client",
+            addDataUI("facturations")
+          )
+        )
       ),
       
       # Missions tab
