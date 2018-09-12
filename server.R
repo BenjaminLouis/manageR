@@ -9,6 +9,6 @@ server <- function(input, output, session) {
   callModule(showData, "factures", data = factures)
   callModule(showData, "clients", data = clients)
   callModule(showData, "facturations", data = facturations)
-  callModule(addData, "clients", data = clients, ncol = 4)
-  callModule(addData, "facturations", data = clients, ncol = 4)
+  callModule(editableDT, "clients", data = clients, path = path, filename = "Clients.csv")#, ncol = 4)
+  callModule(editableDT, "facturations", data = facturations, path = path, filename = "Facturations.csv")#, ncol = 4)
 }

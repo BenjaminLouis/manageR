@@ -88,17 +88,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "clients",
         h4("Clients informations"),
-        tabsetPanel(
-          selected = "Table",
-          tabPanel(
-            title = "Table",
-            showDataUI("clients")
-          ),
-          tabPanel(
-            title = "Add client",
-            addDataUI("clients")
-          )
-        )
+        editableDTUI("clients")
       ),
       
       # Billing adresses tab
@@ -106,17 +96,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "addresses",
         h4("Billing addresses information"),
-        tabsetPanel(
-          selected = "Table",
-          tabPanel(
-            title = "Table",
-            showDataUI("facturations")
-          ),
-          tabPanel(
-            title = "Add client",
-            addDataUI("facturations")
-          )
-        )
+        editableDTUI("facturations")
       ),
       
       # Missions tab
