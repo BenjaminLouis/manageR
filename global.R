@@ -3,7 +3,7 @@ if (!require(shinyFiles)) install.packages('shinyFiles'); library(shinyFiles)
 if (!require(readr)) install.packages('readr'); library(readr)
 if (!require(shinydashboard)) install.packages('shinydashboard'); library(shinydashboard)
 if (!require(DT)) install.packages('DT'); library(DT)
-if (!require(editData)) install.packages('editData'); library(editData) #https://github.com/cardiomoon/editData
+#if (!require(editData)) install.packages('editData'); library(editData) #https://github.com/cardiomoon/editData
 #if (!require(shinyjs)) install.packages('shinyjs'); library(shinyjs)
 source("editTableDT.R")
 ## wdLoad
