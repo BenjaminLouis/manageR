@@ -1,16 +1,12 @@
-inline = function(x, m = 10) {
-  tags$div(style = paste0("display:inline-block; margin:",m,"px;"), x)
-}
-
 editableDTUI <- function(id) {
   ns <- NS(id)
   fluidPage(
     fluidRow(
-      inline(actionButton(ns("delRow"), "Delete", icon = icon("remove", lib = "glyphicon"))),
-      inline(actionButton(ns("addRow"), "Add New", icon = icon("plus", lib = "glyphicon"))),
-      inline(actionButton(ns("editData"), "Edit Data", icon = icon("wrench", lib = "glyphicon"))),
-      inline(radioButtons(ns("selection"), "Data Selection", choices = c("single", "multiple"), inline = TRUE)),
-      inline(actionButton(ns("savedata"), label = "Save as csv", icon = icon("save", lib = "glyphicon")))
+      inline(actionButton(ns("delRow"), "Delete", icon = icon("remove", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("addRow"), "Add New", icon = icon("plus", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("editData"), "Edit Data", icon = icon("wrench", lib = "glyphicon")), va = "middle"),
+      inline(radioButtons(ns("selection"), "Data Selection", choices = c("single", "multiple"), inline = TRUE), va = "middle"),
+      inline(actionButton(ns("savedata"), label = "Save as csv", icon = icon("save", lib = "glyphicon")), va = "middle")
     ),
     br(),
     DT::dataTableOutput(ns("origTable"))
@@ -105,22 +101,22 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
       mydf <- df()
       mylist <- list()
       myclass <- lapply(mydf, class)
-      mylist[[1]] <- inline(actionButton(ns("home"), "", icon = icon("backward", lib = "glyphicon")), m = 3)
-      mylist[[2]] <- inline(actionButton(ns("left"), "", icon = icon("chevron-left", lib = "glyphicon")), m = 3)
-      mylist[[3]] <- inline(numericInput(ns("rowno"), "", value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
-      mylist[[4]] <- inline(actionButton(ns("right"), "", icon = icon("chevron-right",lib = "glyphicon")), m = 3)
-      mylist[[5]] <- inline(actionButton(ns("end"), "", icon = icon("forward",lib = "glyphicon")), m = 3)
-      mylist[[6]] <- inline(actionButton(ns("new"), "", icon = icon("plus",lib = "glyphicon")), m = 3)
+      mylist[[1]] <- inline(actionButton(inputId = ns("home"), label = NULL, icon = icon("backward", lib = "glyphicon")), m = 3)
+      mylist[[2]] <- inline(actionButton(inputId = ns("left"), label = NULL, icon = icon("chevron-left", lib = "glyphicon")), m = 3)
+      mylist[[3]] <- inline(numericInput(inputId = ns("rowno"), label = NULL, value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
+      mylist[[4]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
+      mylist[[5]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
+      mylist[[6]] <- inline(actionButton(inputId = ns("new"), label = NULL, icon = icon("plus",lib = "glyphicon")), m = 3)
       mylist[[7]] <- hr()
       addno <- 7
       mydf <- as.data.frame(mydf[rv$no,])
       for (i in 1:ncol(mydf)) {
         myname <- colnames(mydf)[i]
         if ("factor" %in% myclass[[i]]) {
-          mylist[[i + addno]] <- inline(selectInput(ns(myname), myname, choices = levels(mydf[[i]]), selected = mydf[1,i], width = width))
+          mylist[[i + addno]] <- inline(selectInput(inputId = ns(myname), label = myname, choices = levels(mydf[[i]]), selected = mydf[1,i], width = width))
         }
         else if ("Date" %in% myclass[[i]]) {
-          mylist[[i + addno]] <- inline(dateInput(ns(myname), myname, value = mydf[1, i], width = width))
+          mylist[[i + addno]] <- inline(dateInput(inputId = ns(myname), label = myname, value = mydf[1, i], width = width))
         }
         else if ("logical" %in% myclass[[i]]) {
           if (is.na(mydf[1, i])) {
@@ -128,10 +124,10 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
           } else {
             myvalue <- mydf[1, i]
           }
-          mylist[[i + addno]] <- inline(checkboxInput(ns(myname), myname, value = myvalue, width = width))
+          mylist[[i + addno]] <- inline(checkboxInput(inputId = ns(myname), label = myname, value = myvalue, width = width))
         }
         else {
-          mylist[[i + addno]] <- inline(textInput(ns(myname), myname, value = mydf[1, i], width = width))
+          mylist[[i + addno]] <- inline(textInput(inputId = ns(myname), label = myname, value = mydf[1, i], width = width))
         }
       }
       do.call(tagList, mylist)
@@ -147,7 +143,7 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
     rv$no <- 1
   })
   
-  # Backward button
+  # Forward button
   # ----------------
   observeEvent(input$end, {
     rv$no <- nrow(df())
@@ -157,14 +153,14 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
   # ----------------
   observeEvent(input$left, {
     value <- ifelse(rv$no > 1, rv$no - 1, 1)
-    rv$no <- 1
+    rv$no <- value
   })
   
   # Right chevron button
   # ----------------
   observeEvent(input$right, {
     value <- ifelse(rv$no < nrow(df()), rv$no + 1, nrow(df()))
-    rv$no <- nrow(df())
+    rv$no <- value
   })
   
   # New button
