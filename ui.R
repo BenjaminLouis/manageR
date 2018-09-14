@@ -11,7 +11,7 @@ ui <- dashboardPage(
     sidebarMenu(
       id = "tabs",
       menuItem("Home", tabName = "home", icon = icon("home")),
-      menuItem("Estimates", tabName = "estimates", icon = icon("money")),
+      menuItem("Cost estimates", tabName = "estimates", icon = icon("money")),
       menuItem("Bills", tabName = "bills", icon = icon("bills")),
       menuItem("Budget", tabName = "budget", icon = icon("euro")),
       menuItem("Clients", tabName = "clients", icon = icon("address-card")),
@@ -45,7 +45,7 @@ ui <- dashboardPage(
           selected = "Table",
           tabPanel(
             title = "Table",
-            showDataUI("devis")
+            showDataUI("estimates")
           ),
           tabPanel(
             title = "New cost estimate"
@@ -65,7 +65,7 @@ ui <- dashboardPage(
           selected = "Table",
           tabPanel(
             title = "Table",
-            showDataUI("factures")
+            showDataUI("bills")
           ),
           tabPanel(
             title = "New bill"
@@ -96,7 +96,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "addresses",
         h4("Billing addresses information"),
-        editableDTUI("facturations")
+        editableDTUI("addresses")
       ),
       
       # Missions tab

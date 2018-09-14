@@ -28,6 +28,10 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
     df
   })
   
+  observeEvent(data(),
+    rv$update <- 0
+  )
+  
   # Delete button
   # -------------
   observeEvent(input$delRow, {
@@ -288,5 +292,5 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
     datatable(df(), selection = input$selection, caption = NULL)
   })
   #print(df)
-  #return(reactive(df))
+ reactive(df())
 }
