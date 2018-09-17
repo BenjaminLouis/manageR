@@ -220,8 +220,11 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       filter(ID_Estimate == input$which_est) %>%
       pull(ID_Client)
     output$which_client <- renderText(which_client)
-    which_addr <- billingaddressesdata() %>% 
+    which_workplace <- clientsdata() %>%
       filter(ID_Client == which_client) %>%
+      pull(ID_Workplace)
+    which_addr <- billingaddressesdata() %>% 
+      filter(ID_Workplace == which_workplace) %>%
       pull(ID_Address)
     updateSelectizeInput(session, inputId = "id_billing_address", choices = c("", which_addr))
   })
