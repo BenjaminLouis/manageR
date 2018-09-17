@@ -1,1 +1,1 @@
-ID_Adresse;Company;Department;Register_Siret;Addresse1;Addresse2;Addresse3;City;Country
+ID_Bill;ID_Client;ID_Address;Date;Amount;Status;Payment

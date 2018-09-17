@@ -1,1 +1,3 @@
-ID_Devis;N_Service;Designation;Quantity;Unit;UP
+ID_Estimate;N_Service;Designation;Quantity;Unit;Unit_price
+D1809-0001;1;presta1;4;Jour;500
+D1809-0001;2;presta2;1;Heure;150
