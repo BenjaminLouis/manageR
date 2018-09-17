@@ -3,10 +3,11 @@ if (!require(shinyFiles)) install.packages('shinyFiles'); library(shinyFiles)
 if (!require(readr)) install.packages('readr'); library(readr)
 if (!require(shinydashboard)) install.packages('shinydashboard'); library(shinydashboard)
 if (!require(DT)) install.packages('DT'); library(DT)
+if (!require(dplyr)) install.packages('dplyr'); library(dplyr)
 #if (!require(shinyjs)) install.packages('shinyjs'); library(shinyjs)
 source("utils.R")
 source("editTableDT.R") #Inspired from https://github.com/cardiomoon/editData
-
+source("editBills.R")
 
 wdLoadUI <- function(id) {
   
@@ -19,13 +20,18 @@ wdLoadUI <- function(id) {
 }
 
 wdLoad <- function(input, output, session) {
-  shinyDirChoose(input, "dir", roots = c(wd = getwd()))
+  shinyDirChoose(input, "dir", roots = c(wd = getwd())) 
+  #volumes <- getVolumes()
+  #shinyDirChoose(input, "dir", roots = c(wd = '.', volumes), defaultRoot = 'wd') #getVolumes()) <-- doesn't work
   output$path <- renderText({
+    req(input$dir)
     parseDirPath(c(wd = getwd()), input$dir)
+   # parseDirPath(c(wd = '.'), input$dir)
   })
   reactive({
     req(input$dir)
     parseDirPath(c(wd = getwd()), input$dir)
+    #parseDirPath(c(wd = '.'), input$dir)
   })
 }
 
@@ -49,11 +55,11 @@ loadingOptionsUI <- function(id) {
   )
 }
 
-loadingOptions <- function(input, output, session, path, filename) {
+loadingOptions <- function(input, output, session, path, filename, coltypes = cols(.default = col_character())) {
   reactive({
     req(path())
     do.call(read_delim, args = list(file = paste0(path(), "/", filename), col_names = input$header,
-                                   col_types = cols(.default = col_character()),
+                                   col_types = coltypes,
                                    delim = input$sep))
   })
 }

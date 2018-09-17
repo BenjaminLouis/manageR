@@ -41,19 +41,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "estimates",
         h4("Cost estimates management"),
-        tabsetPanel(
-          selected = "Table",
-          tabPanel(
-            title = "Table",
-            showDataUI("estimates")
-          ),
-          tabPanel(
-            title = "New cost estimate"
-          ),
-          tabPanel(
-            title = "Modify a cost estimate"
-          )
-        )
+        editBillsUI("estimates", mode = "estimate")
       ),
       
       # Bills tab
@@ -61,19 +49,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "bills",
         h4("Bills management"),
-        tabsetPanel(
-          selected = "Table",
-          tabPanel(
-            title = "Table",
-            showDataUI("bills")
-          ),
-          tabPanel(
-            title = "New bill"
-          ),
-          tabPanel(
-            title = "Modify a bill"
-          )
-        )
+        editBillsUI("bills", mode = "bill")
       ),
       
       # Budget tab
@@ -96,7 +72,7 @@ ui <- dashboardPage(
       tabItem(
         tabName = "addresses",
         h4("Billing addresses information"),
-        editableDTUI("addresses")
+        editableDTUI("billingaddresses")
       ),
       
       # Missions tab
