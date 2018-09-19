@@ -1,0 +1,191 @@
+@charset "UTF-8";
+@page {
+  size: a4;
+  margin-top: 10mm;
+  margin-bottom: 15mm;
+  margin-left: 10mm;
+  margin-right: 10mm;
+  font-size: 12pt;
+  line-height: 0mm;
+  @top-right {
+    content: "Facture";
+    text-align: left;
+    vertical-align: bottom;
+    text-transform: uppercase;
+    font-size: 23pt;
+    margin-right: 40mm;
+  }
+  @bottom-left {
+    content: "Facture" " n° " "Test-0001";
+  }
+  @bottom-right {
+    content: "Page " counter(page) "/" counter(pages);
+  }
+}
+
+.centered {
+  text-align: center;
+}
+
+.row {
+  width: 100%;
+  height: auto;
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+
+.col-1 {
+  width: 8.33333%;
+  float: left;
+}
+
+.col-offset-1 {
+  margin-left: 8.33333%;
+  float: left;
+}
+
+.col-2 {
+  width: 16.66667%;
+  float: left;
+}
+
+.col-offset-2 {
+  margin-left: 16.66667%;
+  float: left;
+}
+
+.col-3 {
+  width: 25%;
+  float: left;
+}
+
+.col-offset-3 {
+  margin-left: 25%;
+  float: left;
+}
+
+.col-4 {
+  width: 33.33333%;
+  float: left;
+}
+
+.col-offset-4 {
+  margin-left: 33.33333%;
+  float: left;
+}
+
+.col-5 {
+  width: 41.66667%;
+  float: left;
+}
+
+.col-offset-5 {
+  margin-left: 41.66667%;
+  float: left;
+}
+
+.col-6 {
+  width: 50%;
+  float: left;
+}
+
+.col-offset-6 {
+  margin-left: 50%;
+  float: left;
+}
+
+.col-7 {
+  width: 58.33333%;
+  float: left;
+}
+
+.col-offset-7 {
+  margin-left: 58.33333%;
+  float: left;
+}
+
+.col-8 {
+  width: 66.66667%;
+  float: left;
+}
+
+.col-offset-8 {
+  margin-left: 66.66667%;
+  float: left;
+}
+
+.col-9 {
+  width: 75%;
+  float: left;
+}
+
+.col-offset-9 {
+  margin-left: 75%;
+  float: left;
+}
+
+.col-10 {
+  width: 83.33333%;
+  float: left;
+}
+
+.col-offset-10 {
+  margin-left: 83.33333%;
+  float: left;
+}
+
+.col-11 {
+  width: 91.66667%;
+  float: left;
+}
+
+.col-offset-11 {
+  margin-left: 91.66667%;
+  float: left;
+}
+
+.col-12 {
+  width: 100%;
+  float: left;
+}
+
+.col-offset-12 {
+  margin-left: 100%;
+  float: left;
+}
+
+.boxheader {
+  border: 1px solid black;
+  border-radius: 15px;
+  display: inline-block;
+  width: 30mm;
+  height: 15mm;
+  margin: 0;
+  margin-top: 10mm;
+  padding: 0;
+  text-align: center;
+}
+
+.boxheader > p {
+  line-height: 0mm;
+  font-size: 10pt;
+  text-align: center;
+  font-weight: bold;
+}
+
+.logo > p {
+  margin: 0;
+  padding: 0;
+  vertical-align: top;
+  text-align: left;
+}
+
+/*
+
+img[alt="logo"] {
+  margin: 0;
+  padding: 0;
+}
+*/
+
