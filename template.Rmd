@@ -1,0 +1,252 @@
+---
+title: "A Basic Document With CSS" 
+author: "Jane Doe" 
+date: | 
+  `r format(Sys.time(), '%d %B, %Y')`
+lang: en-US
+pagecounter: "bottom-center"
+output: 
+  weasydoc::hpdf_document_base:
+    engine: "weasyprint"
+    number_sections: true
+    keep_html: true
+    
+---
+
+**Caution: the native RStudio PDF viewer does not handle well some PDF files.  
+If this PDF file seems weird, open it with another PDF viewer.**
+
+The `weasydoc::hpdf_document()` function provides a basic R Markdown output 
+format using `CSS` for paginated document. 
+The output file is a `PDF`. 
+You can customize it with built-in parameters ([first section](#parameters)) 
+and `CSS` rules ([second section](#customizations)).  
+
+## Built-in parameters {#parameters}
+
+You can modify the PDF document with:
+
+- top-level parameters  
+- built-in CSS classes  
+- arguments passed to the `weasydoc::hpdf_document()` function  
+see `help(hpdf_document)`
+
+### Top-level parameters
+
+Top-level parameters are not indented in the document header:
+
+``` {.yaml}
+---
+title: "A Basic Document With CSS" # this is a top-level parameter
+author: "Jane Doe"                           # top-level parameter
+lang: "en-US"                                # top-level parameter
+pagecounter: "bottom-center"                 # top-level parameter
+output:   
+  weasydoc::hpdf_document:  
+    number_sections: true         # argument passed to hpdf_document
+    keep_html: true               # argument passed to hpdf_document
+---
+```
+
+Table: Available top-level YAML metadata variables for `hpdf_document`  
+([default values are underlined]{style="font-weight:lighter;font-size:0.9em;"})
+
+Variable|Description
+---------------|-----------------------------------
+`lang`|Document language code ([`en`]{.underline}, `fr`...). For admitted values, see the [language variables section](http://pandoc.org/MANUAL.html#language-variables) of the `pandoc` documentation
+`dir`|Text direction ([`ltr`]{.underline}, `rtl` or `auto`)
+`keywords`|One or more keyword
+`papersize`|Page size ([`"a4"`]{.underline}, `"letter landscape"`, `"4in 6in"` ...)
+`margin-top`, `margin-right`, `margin-bottom` and `margin-left`|Margins sizes, either a percentage or a length (`15mm`...)
+`fontsize`|Font size (`10pt`, [`11pt`]{.underline} ...)
+`lineheight`|Amount of space used for lines; either a percentage, a length or a unitless value ([`1.4`]{.underline}, `2` ...)
+`main-sans-serif`, `mainfont`|Use `main-sans-serif: true` to use a sans serif font for main text. Change the main font with `mainfont`
+`title-serif`, `titlefont`|Use `title-serif: true` to use a serif font for titles. Change the titles font with `titlefont`
+`monofont`, `monofontsize`|Name and size of the monospaced font
+`textalign`|Text alignement (`left`, [`justify`]{.underline} ...)
+`pagecounter`|One of the margin boxes (`bottom-left-corner`, `bottom-right`, `bottom-center` ...). Default: no page counter.
+
+
+### Built-in classes
+
+The `weasydoc::hpdf_document()` provides a set of `HTML` classes. They can be 
+overridden with customized `CSS` style rules.
+
+#### Paper orientation
+
+You can add the class `portrait` or `landscape` to change the page orientation.  
+For instance, the following `data.frame` will be print in landscape mode.
+
+    `r ''````{r echo=FALSE, class.output="landscape"}
+    head(mtcars, 15L)
+    ```
+
+```{r echo=FALSE, class.output="landscape"}
+head(mtcars, 15L)
+```
+
+#### Text transformations {.portrait}
+
+This template is built on top of `pandoc` default template. The usual `pandoc` 
+`HTML` classes are available:
+
+- smallcaps spans: `[text in smallcaps]{.smallcaps}` is rendered as [text in smallcaps]{.smallcaps}
+- underlined spans: `[underlined text]{.underline}` is rendered as [underlined text]{.underline} 
+
+## CSS customizations {#customizations .portrait}
+
+Providing a `CSS` tutorial is under the scope of `weasydoc`. To learn how to 
+use CSS with `rmarkdown`, it is recommended to read _R Markdown: The Definitive Guide_ ([bookdown.org/yihui/rmarkdown](https://bookdown.org/yihui/rmarkdown/)).   
+However, you will find here some demos of `CSS` customizations using pandoc's 
+`markdown`.
+
+### Add styling rules to divs and spans
+
+You can modify a portion of the text using 
+[bracketed spans](https://pandoc.org/MANUAL.html#extension-bracketed_spans):  
+
+```markdown
+The following bracketed text [will be rendered **in red**]{style="color: red;"}.
+```
+
+The following bracketed text [will be rendered **in red**]{style="color: red;"}.
+
+If you want to style a block of content, you can use [fenced divs](https://pandoc.org/MANUAL.html#extension-fenced_divs):
+
+```markdown
+:::{style="text-transform: uppercase;"}  
+Make this paragraph uppercase.  
+
+And this one, too.  
+:::  
+```
+
+:::{style="text-transform: uppercase;"}  
+Make this paragraph uppercase.  
+
+And this one, too.  
+:::  
+
+### Put the styling rules in CSS declarations
+
+The use of the `style` attribute is discouraged. Defining CSS classes is a best 
+practice.  
+Thanks to the [`css` `knitr` engine](https://bookdown.org/yihui/rmarkdown/language-engines.html#javascript-and-css),
+you can insert CSS declarations in your `Rmd` file (another better option is to 
+put these rules in `.css` files).
+
+You can define rules applied to custom classes...
+
+~~~css
+`r ''````{css, echo=FALSE}
+.rotated {  
+    transform: rotate(-45deg);
+}
+.bg-lightsteelblue {  
+    background-color: LightSteelBlue;
+}
+.box2 {  
+    height: 20mm;
+    width: 20mm;
+    margin: auto;
+}
+.box2 > p {  
+    line-height: 20mm;
+    text-align: center;
+}
+`r ''````
+~~~
+
+```{css, echo=FALSE}
+.rotated {
+  transform: rotate(-45deg);
+}
+.bg-lightsteelblue {
+  background-color: LightSteelBlue;
+}
+.box2 {
+  height: 20mm;
+  width: 20mm;
+  margin: auto;
+}
+.box2 > p {
+  line-height: 20mm;
+  text-align: center;
+}
+```
+
+... and reuse them in your RMarkdown document.
+
+```markdown
+:::{.box2 .bg-lightsteelblue .rotated}
+Hello! 
+:::
+```
+
+:::{.box2 .bg-lightsteelblue .rotated}
+Hello! 
+:::
+
+### Styling pages
+
+With CSS Paged Media, one can style pages with CSS rules. 
+The first page of a document is oftenly styled differently than the other ones.  
+For instance, you can remove the content of the bottom-center margin box using the `@page` at-rule and the `:first` pseudo-class:
+
+```{css}
+@page:first {
+  @bottom-center {
+    content: ""
+  }
+}
+```
+
+For double-sided printed document, you can define different styles for right and left pages:
+
+```{css, eval=FALSE}
+@page:right {
+  @bottom-right: {
+    content: counter(page) "/" counter(pages);
+  }
+}
+@page:left {
+  @bottom-left {
+    content: counter(page) "/" counter(pages);
+  }
+}
+```
+
+You also can define your own page selector:
+
+```{css}
+@page SunriseBackground {
+   background: linear-gradient(to top, 
+                               #355C7D 30%, 
+                               #6C5B7B, 
+                               #C06C84, 
+                               #F67280, 
+                               #F8B195);
+   margin: 0;
+   @bottom-center {
+     content: "";
+   }
+}
+
+.sunrise {
+  page: SunriseBackground;
+  color: #fff;
+}
+
+.sunrise > p {
+  text-align: center;
+  position: relative;
+  bottom: -100mm;
+  text-transform: uppercase;
+  font-size: 42pt;
+}
+```
+
+:::{.sunrise}
+Have fun with  
+CSS Paged Media!
+:::
