@@ -11,6 +11,7 @@ params:
   doc: "Facture"
   ndoc: "N0001"
   nclient: "C0001"
+  name: "Company name\n Services"
 ---
 
 ---
@@ -19,14 +20,20 @@ params:
 #######################################
 ---
 
+:::{.grid-container}
+
 ---
 ### First Row
 ---
-
 :::{.row}
 
-:::{.col-4 .logo}
+:::{.col-4}
 ![logo](name.png){width=40mm}
+
+:::{.big}
+`r params$name`
+:::
+
 :::
 
 :::{.col-8 .centered}
@@ -38,6 +45,7 @@ Date
 
 `r ifelse(params$date == "NA", I(format(Sys.Date(), "%d/%m/%Y")), I(params$date))`
 :::
+
 :::{.boxheader}
 `r I(paste0("N° " , params$doc))`
 
@@ -45,6 +53,7 @@ Date
 
 `r I(params$ndoc)`
 :::
+
 :::{.boxheader}
 N° Client
 
@@ -57,6 +66,34 @@ N° Client
 
 :::
 
+---
+### Second row
+---
+
+:::{.row}
+
+:::{.col-1}
+
+:::
+
+:::{.col-4 .address}
+
+Address 1
+
+Address2
+
+Postal_code City
 
 
 
+:::
+
+:::{.col-7}
+
+
+:::
+
+:::
+
+
+:::
