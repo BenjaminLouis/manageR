@@ -1,4 +1,5 @@
 library(here)
+library(backports) #bug : sinon fonction strrep() n'est pas trouvé --> faire une issue (pas de soucis sous windows)
 library(sassr)
 
 doc <- "Facture"
