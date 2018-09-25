@@ -12,7 +12,20 @@ params:
   ndoc: "N0001"
   nclient: "C0001"
   name: "Company name\n Services"
+  config_address1: "1 rue fictive"
+  config_address2: NA
+  config_postal_code: "01000"
+  config_city: "Testcity"
+  config_mobile: "+33(0)6 00 00 00 00"
+  config_e_mail: "contact@email.com"
+  config_web: "www.siteweb.com"
+  config_siret: xxxxxxxxxxxxxxxxxx
 ---
+
+```{r setup, include=FALSE}
+library(htmltools)
+tagList(rmarkdown::html_dependency_font_awesome())
+```
 
 ---
 #######################################
@@ -23,20 +36,59 @@ params:
 :::{.grid-container}
 
 ---
-### First Row
+### First Row = Header
 ---
 :::{.row}
 
-:::{.col-4}
+:::{.col-5}
 ![logo](name.png){width=40mm}
 
 :::{.big}
 `r params$name`
 :::
 
+:::{.grid-container}
+
+
+:::{.row}
+
+:::{.col-2 .address}
+
+<i class="fa fa-envelope"></i><br />
+
+<br />
+
+`r if(params$config_address2 != "NA") HTML("<br />")`
+
+<i class="fa fa-mobile"></i><br />
+
+<i class="fa fa-at"></i><br />
+
+<i class="fa fa-globe"></i><br />
+
 :::
 
-:::{.col-8 .centered}
+:::{.col-10 .address}
+
+
+`r paste0(params$config_address1, "\n")`
+`r if(params$config_address2 != "NA") paste0(params$config_address2, "\n")`
+`r paste0(params$config_postal_code, params$config_city, "\n", sep = " ")`
+`r paste0(params$config_mobile, "\n")`
+`r paste0(params$config_e_mail, "\n")`
+`r paste0(params$config_web, "\n")`
+
+::: 
+
+:::
+
+:::
+
+
+:::
+
+
+:::{.col-7 .centered}
 
 :::{.boxheader}
 Date
@@ -62,9 +114,18 @@ N° Client
 `r I(params$nclient)`
 :::
 
+
+:::{.box}
+
+
+:::
+
+
 :::
 
 :::
+
+
 
 ---
 ### Second row
@@ -72,26 +133,6 @@ N° Client
 
 :::{.row}
 
-:::{.col-1}
-
-:::
-
-:::{.col-4 .address}
-
-Address 1
-
-Address2
-
-Postal_code City
-
-
-
-:::
-
-:::{.col-7}
-
-
-:::
 
 :::
 
