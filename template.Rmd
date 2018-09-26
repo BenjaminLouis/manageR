@@ -47,10 +47,7 @@ params:
       city: "Testcity"
       mobile: "+33(0)6 00 00 00 00"
       e_mail: "contact@email.com"
-  fromquote:
-    value:
-      ndoc: NA
-      data: NA
+  comment: "Some comments"
   services: NA
   bankinfo:
     value:
@@ -230,7 +227,48 @@ HTML(box)
 ---
 <main>
 
-I am content that doesn't fill the page. The footer will appear at the bottom of the browser window. However, when I do fill the page, you will need to scroll down to see the footer.
+<div class = "row topm">
+
+```{r echo = FALSE}
+if (!(params$comment %in% c("NA", "")) & !is.na(params$comment)) {
+  comment <- paste("<p class = \"bold\">Commentaire : </p><p>", params$comment,"</p>")
+} else {
+  comment <- "<p></p>"
+}
+HTML(comment)
+```
+
+</div>
+
+<div class = "row services">
+
+```{r echo = FALSE}
+data <- tibble('Désignation' = character(),
+                   'Quantité' = double(),
+                   'Unité' = character(),
+                   'Prix unitaire' = double(),
+                   'Total' = double())
+#if (!(params$services %in% c("NA", "")) & !is.na(params$services)) {
+  #temp <- params$services
+  temp <- tibble('Désignation' = c("Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris."),
+                   'Quantité' = c(1:8),
+                   'Unité' = c("Jour", "Jour","Jour", "Jour","Jour", "Jour","Jour", "Jour"),
+                   'Prix unitaire' = c(1:8),
+                   'Total' = c(1:8))
+  colnames(temp) <- colnames(data)
+  data <- bind_rows(data, temp)
+#}
+data %>%
+  kable(format = "html") %>%
+  column_spec(column = 1, width = "42%") %>%
+  column_spec(column = 2, width = "13%") %>%
+  column_spec(column = 3, width = "12%") %>%
+  column_spec(column = 4, width = "18%") %>%
+  column_spec(column = 5, width = "15%") %>%
+  HTML()
+```
+
+</div>
 
 </main>
 
