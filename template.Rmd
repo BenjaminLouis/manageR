@@ -79,11 +79,16 @@ concatenate <- function(...) {
 }
 ```
 
+
+<div class="wrapper">
+
+
 ---
 #######################################
 ############# HEADER ##################
 #######################################
 ---
+<header>
 
 <div class = "grid-container">
 
@@ -198,21 +203,37 @@ HTML(box)
 
 </div>
 
-
 </div>
 
 </div>
+
+</div>
+
+</header>
 
 
 ---
-### Second row
+#######################################
+############### MAIN ##################
+#######################################
 ---
+<main>
 
-<div class="row">
+I am content that doesn't fill the page. The footer will appear at the bottom of the browser window. However, when I do fill the page, you will need to scroll down to see the footer.
 
+</main>
 
+---
+#######################################
+############# FOOTER ##################
+#######################################
+---
+<footer>
 
+I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.
+
+</footer>
+  
+  
 </div>
 
-
-</div>
