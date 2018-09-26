@@ -11,227 +11,7 @@
       span.underline{text-decoration: underline;}
       div.column{display: inline-block; vertical-align: top; width: 50%;}
   </style>
-  <style type="text/css">@charset "UTF-8";
-
-
-
-
-@page {
-size: a4;
-margin-top: 8mm;
-margin-bottom: 13mm;
-margin-left: 10mm;
-margin-right: 10mm;
-font-size: 12pt;
-line-height: 0mm;
-@top-right {
-content: "Facture";
-text-align: left;
-vertical-align: bottom;
-text-transform: uppercase;
-font-size: 23pt;
-margin-right: 40mm;
-}
-@bottom-left {
-content: "Facture" " n° " "Test-0001";
-}
-@bottom-right {
-content: "Page " counter(page) "/" counter(pages);
-}
-}
-
-
-
-
-.wrapper {
-min-height: 100%;
-}
-header {
-width: 100%;
-height: auto;
-}
-main {
-overflow: auto;
-}
-footer {
-position: absolute;
-bottom: 0;
-width: 50%;
-}
-
-
-
-.grid-container {
-width: 100%;
-}
-
-.row:before,
-.row:after {
-content: "";
-display: block;
-clear: both;
-}
-[class*='col-'] {
-float: left;
-min-height: 1px;
-width: 100% / 12;
-
-
-
-}
-.col-1 {
-width: 8.33333%;
-}
-.col-offset-1 {
-margin-left: 8.33333%;
-}
-.col-2 {
-width: 16.66667%;
-}
-.col-offset-2 {
-margin-left: 16.66667%;
-}
-.col-3 {
-width: 25%;
-}
-.col-offset-3 {
-margin-left: 25%;
-}
-.col-4 {
-width: 33.33333%;
-}
-.col-offset-4 {
-margin-left: 33.33333%;
-}
-.col-5 {
-width: 41.66667%;
-}
-.col-offset-5 {
-margin-left: 41.66667%;
-}
-.col-6 {
-width: 50%;
-}
-.col-offset-6 {
-margin-left: 50%;
-}
-.col-7 {
-width: 58.33333%;
-}
-.col-offset-7 {
-margin-left: 58.33333%;
-}
-.col-8 {
-width: 66.66667%;
-}
-.col-offset-8 {
-margin-left: 66.66667%;
-}
-.col-9 {
-width: 75%;
-}
-.col-offset-9 {
-margin-left: 75%;
-}
-.col-10 {
-width: 83.33333%;
-}
-.col-offset-10 {
-margin-left: 83.33333%;
-}
-.col-11 {
-width: 91.66667%;
-}
-.col-offset-11 {
-margin-left: 91.66667%;
-}
-.col-12 {
-width: 100%;
-}
-.col-offset-12 {
-margin-left: 100%;
-}
-
-
-.logo > p {
-margin: 0;
-padding: 0;
-vertical-align: top;
-text-align: left;
-}
-.big {
-font-size: 13pt;
-font-weight: bold;
-margin: 0;
-padding: 0;
-}
-.boxheader {
-border: 1px solid black;
-border-radius: 15px;
-display: inline-block;
-width: 30mm;
-height: 15mm;
-margin: 0;
-margin-top: 10mm;
-padding: 0;
-text-align: center;
-}
-.boxheader > p {
-line-height: 0mm;
-font-size: 10pt;
-text-align: center;
-font-weight: bold;
-}
-.centered {
-text-align: center;
-}
-.address {
-margin: 0;
-padding: 0;
-font-size: 10pt;
-line-height: 15px;
-}
-.address > table {
-margin: 0;
-padding: 0;
-}
-.address > table > tr > td {
-vertical-align: top;
-margin: 0;
-padding: 0;
-}
-.box {
-display: inline-block;
-height: auto;
-margin-top: 10mm;
-margin-bottom: 1mm;
-padding-top: 3mm;
-padding-bottom: 3mm;
-padding-left: 0;
-padding-right: 0;
-background-color: rgba(100, 100, 100, 0.5);
-}
-.box p {
-line-height: 0mm;
-font-size: 10pt;
-text-align: left;
-padding-left: 3mm;
-padding-right: 3mm;
-}
-#bill {
-width: 110mm;
-}
-#quote {
-width: 55mm;
-}
-.headclient {
-font-size: 14pt;
-font-weight: bold;
-padding-bottom: 2mm;
-padding-top: 3mm;
-margin: 0;
-}
-</style>
+  <style type="text/css">@charset "UTF-8";@page {size: a4;margin-top: 8mm;margin-bottom: 13mm;margin-left: 10mm;margin-right: 10mm;font-size: 12pt;line-height: 0mm;@top-right {content: "Facture";text-align: left;vertical-align: bottom;text-transform: uppercase;font-size: 23pt;margin-right: 40mm;}@bottom-left {content: "Facture" " n° " "Test-0001";}@bottom-right {content: "Page " counter(page) "/" counter(pages);}}.wrapper {min-height: 100%;}header {width: 100%;height: auto;}main {overflow: auto;}footer {position: absolute;bottom: 0;width: 55%;font-size: 9pt;text-align: justify;}.grid-container {width: 100%;}.row:before,.row:after {content: "";display: block;clear: both;}[class*='col-'] {float: left;min-height: 1px;width: 100% / 12;}.col-1 {width: 8.33333%;}.col-offset-1 {margin-left: 8.33333%;}.col-2 {width: 16.66667%;}.col-offset-2 {margin-left: 16.66667%;}.col-3 {width: 25%;}.col-offset-3 {margin-left: 25%;}.col-4 {width: 33.33333%;}.col-offset-4 {margin-left: 33.33333%;}.col-5 {width: 41.66667%;}.col-offset-5 {margin-left: 41.66667%;}.col-6 {width: 50%;}.col-offset-6 {margin-left: 50%;}.col-7 {width: 58.33333%;}.col-offset-7 {margin-left: 58.33333%;}.col-8 {width: 66.66667%;}.col-offset-8 {margin-left: 66.66667%;}.col-9 {width: 75%;}.col-offset-9 {margin-left: 75%;}.col-10 {width: 83.33333%;}.col-offset-10 {margin-left: 83.33333%;}.col-11 {width: 91.66667%;}.col-offset-11 {margin-left: 91.66667%;}.col-12 {width: 100%;}.col-offset-12 {margin-left: 100%;}.logo > p {margin: 0;padding: 0;vertical-align: top;text-align: left;}.big {font-size: 13pt;font-weight: bold;margin: 0;padding: 0;}.boxheader {border: 1px solid black;border-radius: 15px;display: inline-block;width: 30mm;height: 15mm;margin: 0;margin-top: 10mm;padding: 0;text-align: center;}.boxheader > p {line-height: 0mm;font-size: 10pt;text-align: center;font-weight: bold;}.centered {text-align: center;}.address {margin: 0;padding: 0;font-size: 10pt;line-height: 15px;}.address > table {margin: 0;padding: 0;}.address > table > tr > td {vertical-align: top;margin: 0;padding: 0;}.box {display: inline-block;height: auto;margin-top: 10mm;margin-bottom: 1mm;padding-top: 3mm;padding-bottom: 3mm;padding-left: 0;padding-right: 0;background-color: rgba(100, 100, 100, 0.5);}.box p {line-height: 0mm;font-size: 10pt;text-align: left;padding-left: 3mm;padding-right: 3mm;}#bill {width: 110mm;}#quote {width: 55mm;}.headclient {font-size: 14pt;font-weight: bold;padding-bottom: 2mm;padding-top: 3mm;margin: 0;}.footbox {border: 1px solid black;height: 35mm;width: 90%;vertical-align: top;}.footbox > p {margin: 0;padding: 1mm;}.bold {font-weight: bold;}.medium {font-size: 11pt;font-weight: bold;}#footquote {width: 90%;}</style>
   <style type="text/css">
 
 @media print {
@@ -1820,7 +1600,7 @@ font-weight: 400; }
  
 <tbody>
   <tr>
-   <td style="text-align:left;width: 8mm; text-align:center;vertical-align: top !important;" rowspan="3"> <i class="fa fa-envelope"></i> </td>
+   <td style="text-align:left;width: 8mm; text-align:center;vertical-align: top !important;" rowspan="3"> <img alt="icon" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyBzdHlsZT0iaGVpZ2h0OjAuOGVtO3RvcDouMDRlbTtwb3NpdGlvbjpyZWxhdGl2ZTsiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNNTAyLjMgMTkwLjhjMy45LTMuMSA5LjctLjIgOS43IDQuN1Y0MDBjMCAyNi41LTIxLjUgNDgtNDggNDhINDhjLTI2LjUgMC00OC0yMS41LTQ4LTQ4VjE5NS42YzAtNSA1LjctNy44IDkuNy00LjcgMjIuNCAxNy40IDUyLjEgMzkuNSAxNTQuMSAxMTMuNiAyMS4xIDE1LjQgNTYuNyA0Ny44IDkyLjIgNDcuNiAzNS43LjMgNzItMzIuOCA5Mi4zLTQ3LjYgMTAyLTc0LjEgMTMxLjYtOTYuMyAxNTQtMTEzLjd6TTI1NiAzMjBjMjMuMi40IDU2LjYtMjkuMiA3My40LTQxLjQgMTMyLjctOTYuMyAxNDIuOC0xMDQuNyAxNzMuNC0xMjguNyA1LjgtNC41IDkuMi0xMS41IDkuMi0xOC45di0xOWMwLTI2LjUtMjEuNS00OC00OC00OEg0OEMyMS41IDY0IDAgODUuNSAwIDExMnYxOWMwIDcuNCAzLjQgMTQuMyA5LjIgMTguOSAzMC42IDIzLjkgNDAuNyAzMi40IDE3My40IDEyOC43IDE2LjggMTIuMiA1MC4yIDQxLjggNzMuNCA0MS40eiIvPjwvc3ZnPg=="> </td>
    <td style="text-align:left;"> 1 rue fictive </td>
   </tr>
   <tr>
@@ -1832,15 +1612,15 @@ font-weight: 400; }
    <td style="text-align:left;"> 01000 Testcity </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 8mm; text-align:center;"> <i class="fa fa-mobile"></i> </td>
+   <td style="text-align:left;width: 8mm; text-align:center;"> <img alt="icon" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyBzdHlsZT0iaGVpZ2h0OjAuOGVtO3RvcDouMDRlbTtwb3NpdGlvbjpyZWxhdGl2ZTsiIHZpZXdCb3g9IjAgMCAzMjAgNTEyIj48cGF0aCBkPSJNMjcyIDBINDhDMjEuNSAwIDAgMjEuNSAwIDQ4djQxNmMwIDI2LjUgMjEuNSA0OCA0OCA0OGgyMjRjMjYuNSAwIDQ4LTIxLjUgNDgtNDhWNDhjMC0yNi41LTIxLjUtNDgtNDgtNDh6TTE2MCA0ODBjLTE3LjcgMC0zMi0xNC4zLTMyLTMyczE0LjMtMzIgMzItMzIgMzIgMTQuMyAzMiAzMi0xNC4zIDMyLTMyIDMyeiIvPjwvc3ZnPg=="> </td>
    <td style="text-align:left;"> +33(0)6 00 00 00 00 </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 8mm; text-align:center;"> <i class="fa fa-at"></i> </td>
+   <td style="text-align:left;width: 8mm; text-align:center;"> <img alt="icon" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyBzdHlsZT0iaGVpZ2h0OjAuOGVtO3RvcDouMDRlbTtwb3NpdGlvbjpyZWxhdGl2ZTsiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj48cGF0aCBkPSJNMjU2IDhDMTE4Ljk0MSA4IDggMTE4LjkxOSA4IDI1NmMwIDEzNy4wNTkgMTEwLjkxOSAyNDggMjQ4IDI0OCA0OC4xNTQgMCA5NS4zNDItMTQuMTQgMTM1LjQwOC00MC4yMjMgMTIuMDA1LTcuODE1IDE0LjYyNS0yNC4yODggNS41NTItMzUuMzcybC0xMC4xNzctMTIuNDMzYy03LjY3MS05LjM3MS0yMS4xNzktMTEuNjY3LTMxLjM3My01LjEyOUMzMjUuOTIgNDI5Ljc1NyAyOTEuMzE0IDQ0MCAyNTYgNDQwYy0xMDEuNDU4IDAtMTg0LTgyLjU0Mi0xODQtMTg0UzE1NC41NDIgNzIgMjU2IDcyYzEwMC4xMzkgMCAxODQgNTcuNjE5IDE4NCAxNjAgMCAzOC43ODYtMjEuMDkzIDc5Ljc0Mi01OC4xNyA4My42OTMtMTcuMzQ5LS40NTQtMTYuOTEtMTIuODU3LTEzLjQ3Ni0zMC4wMjRsMjMuNDMzLTEyMS4xMUMzOTQuNjUzIDE0OS43NSAzODMuMzA4IDEzNiAzNjguMjI1IDEzNmgtNDQuOTgxYTEzLjUxOCAxMy41MTggMCAwIDAtMTMuNDMyIDExLjk5M2wtLjAxLjA5MmMtMTQuNjk3LTE3LjkwMS00MC40NDgtMjEuNzc1LTU5Ljk3MS0yMS43NzUtNzQuNTggMC0xMzcuODMxIDYyLjIzNC0xMzcuODMxIDE1MS40NiAwIDY1LjMwMyAzNi43ODUgMTA1Ljg3IDk2IDEwNS44NyAyNi45ODQgMCA1Ny4zNjktMTUuNjM3IDc0Ljk5MS0zOC4zMzMgOS41MjIgMzQuMTA0IDQwLjYxMyAzNC4xMDMgNzAuNzEgMzQuMTAzQzQ2Mi42MDkgMzc5LjQxIDUwNCAzMDcuNzk4IDUwNCAyMzIgNTA0IDk1LjY1MyAzOTQuMDIzIDggMjU2IDh6bS0yMS42OCAzMDQuNDNjLTIyLjI0OSAwLTM2LjA3LTE1LjYyMy0zNi4wNy00MC43NzEgMC00NC45OTMgMzAuNzc5LTcyLjcyOSA1OC42My03Mi43MjkgMjIuMjkyIDAgMzUuNjAxIDE1LjI0MSAzNS42MDEgNDAuNzcgMCA0NS4wNjEtMzMuODc1IDcyLjczLTU4LjE2MSA3Mi43M3oiLz48L3N2Zz4="> </td>
    <td style="text-align:left;"> contact@email.com </td>
   </tr>
   <tr>
-   <td style="text-align:left;width: 8mm; text-align:center;"> <i class="fa fa-globe"></i> </td>
+   <td style="text-align:left;width: 8mm; text-align:center;"> <img alt="icon" src="data:image/svg+xml;charset=utf-8;base64,PHN2ZyBzdHlsZT0iaGVpZ2h0OjAuOGVtO3RvcDouMDRlbTtwb3NpdGlvbjpyZWxhdGl2ZTsiIHZpZXdCb3g9IjAgMCA0OTYgNTEyIj48cGF0aCBkPSJNMzM2LjUgMTYwQzMyMiA3MC43IDI4Ny44IDggMjQ4IDhzLTc0IDYyLjctODguNSAxNTJoMTc3ek0xNTIgMjU2YzAgMjIuMiAxLjIgNDMuNSAzLjMgNjRoMTg1LjNjMi4xLTIwLjUgMy4zLTQxLjggMy4zLTY0cy0xLjItNDMuNS0zLjMtNjRIMTU1LjNjLTIuMSAyMC41LTMuMyA0MS44LTMuMyA2NHptMzI0LjctOTZjLTI4LjYtNjcuOS04Ni41LTEyMC40LTE1OC0xNDEuNiAyNC40IDMzLjggNDEuMiA4NC43IDUwIDE0MS42aDEwOHpNMTc3LjIgMTguNEMxMDUuOCAzOS42IDQ3LjggOTIuMSAxOS4zIDE2MGgxMDhjOC43LTU2LjkgMjUuNS0xMDcuOCA0OS45LTE0MS42ek00ODcuNCAxOTJIMzcyLjdjMi4xIDIxIDMuMyA0Mi41IDMuMyA2NHMtMS4yIDQzLTMuMyA2NGgxMTQuNmM1LjUtMjAuNSA4LjYtNDEuOCA4LjYtNjRzLTMuMS00My41LTguNS02NHpNMTIwIDI1NmMwLTIxLjUgMS4yLTQzIDMuMy02NEg4LjZDMy4yIDIxMi41IDAgMjMzLjggMCAyNTZzMy4yIDQzLjUgOC42IDY0aDExNC42Yy0yLTIxLTMuMi00Mi41LTMuMi02NHptMzkuNSA5NmMxNC41IDg5LjMgNDguNyAxNTIgODguNSAxNTJzNzQtNjIuNyA4OC41LTE1MmgtMTc3em0xNTkuMyAxNDEuNmM3MS40LTIxLjIgMTI5LjQtNzMuNyAxNTgtMTQxLjZoLTEwOGMtOC44IDU2LjktMjUuNiAxMDcuOC01MCAxNDEuNnpNMTkuMyAzNTJjMjguNiA2Ny45IDg2LjUgMTIwLjQgMTU4IDE0MS42LTI0LjQtMzMuOC00MS4yLTg0LjctNTAtMTQxLjZoLTEwOHoiLz48L3N2Zz4="> </td>
    <td style="text-align:left;"> www.siteweb.com </td>
   </tr>
   <tr>
@@ -1880,7 +1660,7 @@ font-weight: 400; }
 <p>I am content that doesn’t fill the page. The footer will appear at the bottom of the browser window. However, when I do fill the page, you will need to scroll down to see the footer.</p>
 </main>
 <footer>
-<p>I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.I am the footer.</p>
+<p>Merci d’effectuer le paiement à réception de la facture par virement bancaire en utilisant les coordonnées ci-dessous et en précisant le numéro de la facture dans le libellé :</p> <table><tr><th class = "bold">Titulaire :</th><th> HOLDER </th></tr> <tr><th class = "bold">Banque :</th><th> Bank of fake </th></tr> <tr><th class = "bold">BIC :</th><th> CCHAJUSAHXX </th></tr> <tr><th class = "bold">IBAN :</th><th> FR** **** **** **** **** **** *** </th></tr></table>
 </footer>
 </div>
 </body>

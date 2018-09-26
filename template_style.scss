@@ -49,7 +49,9 @@ main {
 footer {
   position: absolute;
   bottom: 0;
-  width: 50%;
+  width: 55%;
+  font-size: 9pt;
+  text-align: justify;
 }
 
 /* GRID SYSTEM */
@@ -178,3 +180,26 @@ footer {
   margin: 0;
 }
 
+.footbox {
+  border: 1px solid black;
+  height: 35mm;
+  width: 90%;
+  vertical-align: top;
+  & > p {
+    margin: 0;
+    padding: 1mm;
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.medium {
+  font-size: 11pt;
+  font-weight: bold;
+}
+
+#footquote {
+  width: 90%;
+}
