@@ -1,6 +1,9 @@
-
+/* VARIABLES */
+/*-----------*/
 @import 'variables';
 
+/* CSS PAGE MEDIA ELEMENTS */
+/*-------------------------*/
 @page {
   size: a4;
   margin-top: 8mm;
@@ -25,11 +28,38 @@
   }
 }
 
+/* PAGE STRUCTURATION */
+/* Solution to have in the body  header, main and footer elements with complex content*/
+/* see https://stackoverflow.com/questions/16679146/force-footer-on-bottom-on-pages-with-little-content */
+/*------------------------------------------------------------------------------------------------------*/
+
+.wrapper {
+  min-height: 100%;
+}
+
+header {
+  width: 100%;
+  height: auto;
+}
+
+main {
+  overflow: auto;
+}
+
+footer {
+  position: absolute;
+  bottom: 0;
+  width: 50%;
+}
+
+/* GRID SYSTEM */
+/* see http://j4n.co/blog/Creating-your-own-css-grid-system */
+/*----------------------------------------------------------*/
 .grid-container{
   width: 100%;
 }
 
-/*-- our cleafix hack --  (http://j4n.co/blog/Creating-your-own-css-grid-system) */
+/*-- our cleafix hack -- */
 .row:before, 
 .row:after {
   content: "";
@@ -54,6 +84,9 @@
     margin-left: 100% / $columns *$i;
   }
 }
+
+/* OTHER ELEMENTS */
+/*----------------*/
 
 .logo > p {
   margin: 0;
@@ -144,3 +177,4 @@
   padding-top: 3mm;
   margin: 0;
 }
+
