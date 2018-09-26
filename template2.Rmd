@@ -7,25 +7,46 @@ output:
     css: "template_style.css"
     fig_caption: false
 params:
-  date: NA
-  doc: Facture
-  ndoc: N0001
-  nclient: C0001
+  info:
+    value:
+      date: NA
+      doc: "Facture"
+      ndoc: "N0001"
+      nclient: "C0001"
   name: "Company name<br> Services"
   config:
     value:
-      address1: 1 rue fictive
-      postal_code: 01000
-      city: Testcity
-      mobile: +33(0)6 00 00 00 00
-      e_mail: contact@email.com
-      web: www.siteweb.com
-      siret: xxxxxxxxxxxxxxxxxx
+      address1: "1 rue fictive"
+      address2: "test"
+      postal_code: "01000"
+      city: "Testcity"
+      mobile: "+33(0)6 00 00 00 00"
+      e_mail: "contact@email.com"
+      web: "www.siteweb.com"
+      siret: "xxxxxxxxxxxxxxxxxx"
 ---
 
 ```{r setup, include=FALSE}
 library(htmltools)
+library(glue)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(kableExtra)
+library(fontawesome)
 tagList(rmarkdown::html_dependency_font_awesome())
+if (Sys.info()["sysname"] == "Linux") {
+  insert_fa <- function(x) { glue("<i class=\"fa fa-{x}\"></i>") }
+}
+if (Sys.info()["sysname"] == "Windows") {
+  insert_fa <- function(x) { 
+    fa_r <- fa(glue("{x}"))
+    fa_r_raw <- charToRaw(fa_r)
+    fa_r_enc <- paste0("data:image/svg+xml;charset=utf-8;base64,", base64enc::base64encode(fa_r_raw))
+    glue("<img alt=\"icon\" src=\"{fa_r_enc}\">")
+  }
+}
+remove_header <- function(x) { gsub("<thead>.*</thead>", "", x) }
 ```
 
 ---
@@ -42,12 +63,38 @@ tagList(rmarkdown::html_dependency_font_awesome())
 <div class = "row">
 
 <div class = "col-5">
-![logo](name.png){width=40mm}
+![logo](name.png){width=35mm}
 
 :::{.big}
-`r params$name`
+`r if(params$name != "NA") params$name`
 :::
 
+<div class = "address">
+```{r echo = FALSE}
+lconfig <- params$config
+lconfig[lconfig == "NA" | lconfig == ""] <- NA
+lconfig$address3 <- paste(lconfig$postal_code, lconfig$city)
+lconfig <- lconfig[c("address1", "address2", "address3", "mobile", "e_mail", "web", "siret")]
+if (!is.na(lconfig$siret)) { lconfig$siret <- paste(":", lconfig$siret)}
+lconfig <- lconfig[!is.na(lconfig)]
+address = insert_fa("envelope")
+mobile = insert_fa("mobile")
+e_mail = insert_fa("at")
+web = insert_fa("globe")
+siret = "Siret" 
+lconfig <- as_tibble(lconfig) %>%
+  gather() %>%
+  mutate(key = gsub("address\\d", "address", key)) %>%
+  mutate(key = paste0("{", key, "}")) %>%
+  kable() %>%
+  column_spec(column = 1, width = "8mm", extra_css = "text-align:center;") %>%
+  collapse_rows(valign = "top") %>%
+  glue() %>%
+  remove_header() %>%
+  HTML()
+lconfig
+```
+</div>
 
 </div>
 
@@ -59,15 +106,15 @@ Date
 
 ***
 
-`r ifelse(params$date == "NA", I(format(Sys.Date(), "%d/%m/%Y")), I(params$date))`
+`r ifelse(params$info$date == "NA", I(format(Sys.Date(), "%d/%m/%Y")), I(params$info$date))`
 :::
 
 :::{.boxheader}
-`r I(paste0("N° " , params$doc))`
+`r I(paste0("N° " , params$info$doc))`
 
 ***
 
-`r I(params$ndoc)`
+`r I(params$info$ndoc)`
 :::
 
 :::{.boxheader}
@@ -75,7 +122,7 @@ N° Client
 
 ***
 
-`r I(params$nclient)`
+`r I(params$info$nclient)`
 :::
 
 
@@ -90,12 +137,12 @@ N° Client
 </div>
 
 
-
 ---
 ### Second row
 ---
 
 <div class="row">
+
 
 
 </div>
