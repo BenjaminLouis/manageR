@@ -113,7 +113,25 @@
 
 
 .box {
-
+  display: inline-block;
+  width: 45mm;
+  height: 30mm;
+  margin-top: 10mm;
+  margin-bottom: 1mm;
+  padding: 1mm;
+  background-color: gray;
+  p{
+    line-height: 0mm;
+    font-size: 10pt;
+    text-align: left;
+  }
 }
 
+.leftbordered {
+  border-left: 1px solid black;
+}
 
+.headclient {
+  font-size: 12pt;
+  font-weight: bold;
+}

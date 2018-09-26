@@ -13,7 +13,7 @@ params:
       doc: "Facture"
       ndoc: "N0001"
       nclient: "C0001"
-  name: "Company name<br> Services"
+  name: "Company name<br/> Services"
   config:
     value:
       address1: "1 rue fictive"
@@ -24,6 +24,29 @@ params:
       e_mail: "contact@email.com"
       web: "www.siteweb.com"
       siret: "xxxxxxxxxxxxxxxxxx"
+  client:
+    value:
+      firstname: "firstname"
+      name: "name"
+      company: NA
+      department: NA
+      address1: "1 rue fictive"
+      address2: "test"
+      postal_code: "01000"
+      city: "Testcity"
+      mobile: "+33(0)6 00 00 00 00"
+      e_mail: "contact@email.com"
+  billing:
+    value:
+      company: NA
+      department: NA
+      siret: NA
+      address1: "1 rue fictive"
+      address2: "test"
+      postal_code: "01000"
+      city: "Testcity"
+      mobile: "+33(0)6 00 00 00 00"
+      e_mail: "contact@email.com"
 ---
 
 ```{r setup, include=FALSE}
@@ -47,6 +70,13 @@ if (Sys.info()["sysname"] == "Windows") {
   }
 }
 remove_header <- function(x) { gsub("<thead>.*</thead>", "", x) }
+concatenate <- function(...) {
+  st <- glue(..., .na = "", .sep = " ")
+  st <- gsub("\\s{2,}", " ", st)
+  st <- gsub("(^\\s+)|(\\s+$)", "", st)
+  st <- gsub("^$", NA, st)
+  return(st)
+}
 ```
 
 ---
@@ -70,10 +100,10 @@ remove_header <- function(x) { gsub("<thead>.*</thead>", "", x) }
 :::
 
 <div class = "address">
-```{r echo = FALSE}
+```{r echo = FALSE, warning = FALSE}
 lconfig <- params$config
 lconfig[lconfig == "NA" | lconfig == ""] <- NA
-lconfig$address3 <- paste(lconfig$postal_code, lconfig$city)
+lconfig$address3 <- concatenate(lconfig$postal_code, lconfig$city)
 lconfig <- lconfig[c("address1", "address2", "address3", "mobile", "e_mail", "web", "siret")]
 if (!is.na(lconfig$siret)) { lconfig$siret <- paste(":", lconfig$siret)}
 lconfig <- lconfig[!is.na(lconfig)]
@@ -101,6 +131,8 @@ lconfig
 
 <div class = "col-7 centered">
 
+<div class = "row">
+
 :::{.boxheader}
 Date
 
@@ -125,11 +157,47 @@ N° Client
 `r I(params$info$nclient)`
 :::
 
+</div>
 
-:::{.box}
+<div class = "row">
 
+```{r echo = FALSE}
+lclient <- params$client
+lclient[lclient == "NA" | lclient == ""] <- NA
+lclient$who <- concatenate(lclient$firstname, lclient$name)
+lclient$where <- concatenate(lclient$company, lclient$department)
+lclient$address3 <- concatenate(lclient$postal_code, lclient$city)
+lclient <- lclient[c("who", "where","address1", "address2", "address3", "mobile", "e_mail")]
+lclient <- lclient[!is.na(lclient)]
+lclient <- lapply(lclient, function(x) paste("<p>", x ,"</p>"))
+header <- switch(tolower(params$info$doc),
+                 facture = "Livraison :",
+                 devis = "Client :",
+                 invoice = "Delivery :",
+                 quote = "Client :")
+box1 <- paste0("<span class = \"box\"><p class = \"headclient\">", header, 
+               "</p>",paste(lclient, collapse = ""), "</span>")
+if (tolower(params$info$doc) %in% c("facture", "invoice")) {
+  lbilling <- params$billing
+  lbilling[lbilling == "NA" | lbilling == ""] <- NA
+  lbilling$where <- concatenate(lbilling$company, lbilling$department)
+  lbilling$address3 <- concatenate(lbilling$postal_code, lbilling$city)
+  if (!is.na(lbilling$siret)) { lbilling$siret <- paste("Siret", lconfig$siret)}
+  lbilling <- lbilling[c("where", "siret","address1", "address2", "address3", "mobile", "e_mail")]
+  lbilling <- lbilling[!is.na(lbilling)]
+  lbilling <-  lapply(lbilling, function(x) paste("<p>", x ,"</p>"))
+  header <- switch(tolower(params$info$doc),
+                   facture = "Facturation :",
+                   invoice = "Billing :")
+  box2 <- paste0("<span class = \"box\"><p class = \"headclient\">", header, 
+                 "</p>",paste(lbilling, collapse = ""), "</span>")
+} else {
+  box2 <- NULL
+}
+HTML(paste(box1, box2, sep = ""))
+```
 
-:::
+</div>
 
 
 </div>
