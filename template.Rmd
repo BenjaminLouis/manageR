@@ -175,8 +175,8 @@ header <- switch(tolower(params$info$doc),
                  devis = "Client :",
                  invoice = "Delivery :",
                  quote = "Client :")
-box1 <- paste0("<span class = \"box\"><p class = \"headclient\">", header, 
-               "</p>",paste(lclient, collapse = ""), "</span>")
+box1 <- paste0("<p class = \"headclient\">", header, 
+               "</p>",paste(lclient, collapse = ""))
 if (tolower(params$info$doc) %in% c("facture", "invoice")) {
   lbilling <- params$billing
   lbilling[lbilling == "NA" | lbilling == ""] <- NA
@@ -189,12 +189,11 @@ if (tolower(params$info$doc) %in% c("facture", "invoice")) {
   header <- switch(tolower(params$info$doc),
                    facture = "Facturation :",
                    invoice = "Billing :")
-  box2 <- paste0("<span class = \"box\"><p class = \"headclient\">", header, 
-                 "</p>",paste(lbilling, collapse = ""), "</span>")
+  box <- paste0("<div class = \"box\" id = \"bill\"><div class = \"row\"><div class = \"col-6\">",box1,"</div><div class = \"col-6\"><p class = \"headclient\">", header, "</p>",paste(lbilling, collapse = ""), "</div></div></div>")
 } else {
-  box2 <- NULL
+  box <- paste0("<div class = \"box\" id = \"quote\"><div class = \"row\">",box1,"</div></div>")
 }
-HTML(paste(box1, box2, sep = ""))
+HTML(box)
 ```
 
 </div>
