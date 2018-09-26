@@ -34,9 +34,8 @@ library(tidyr)
 library(knitr)
 library(kableExtra)
 library(fontawesome)
-#tagList(rmarkdown::html_dependency_font_awesome())
+tagList(rmarkdown::html_dependency_font_awesome())
 if (Sys.info()["sysname"] == "Linux") {
-  tagList(rmarkdown::html_dependency_font_awesome())
   insert_fa <- function(x) { glue("<i class=\"fa fa-{x}\"></i>") }
 }
 if (Sys.info()["sysname"] == "Windows") {
@@ -143,6 +142,7 @@ N° Client
 ---
 
 <div class="row">
+
 
 
 </div>
