@@ -35,12 +35,18 @@ library(knitr)
 library(kableExtra)
 library(fontawesome)
 #tagList(rmarkdown::html_dependency_font_awesome())
-insert_fa <- function(x) { 
-  fa_r <- fa(glue("{x}"))
-  fa_r_raw <- charToRaw(fa_r)
-  fa_r_enc <- paste0("data:image/svg+xml;charset=utf-8;base64,", base64enc::base64encode(fa_r_raw))
-  glue("<img alt=\"icon\" src=\"{fa_r_enc}\">")
+if (Sys.info()["sysname"] == "Linux") {
+  tagList(rmarkdown::html_dependency_font_awesome())
+  insert_fa <- function(x) { glue("<i class=\"fa fa-{x}\"></i>") }
+}
+if (Sys.info()["sysname"] == "Windows") {
+  insert_fa <- function(x) { 
+    fa_r <- fa(glue("{x}"))
+    fa_r_raw <- charToRaw(fa_r)
+    fa_r_enc <- paste0("data:image/svg+xml;charset=utf-8;base64,", base64enc::base64encode(fa_r_raw))
+    glue("<img alt=\"icon\" src=\"{fa_r_enc}\">")
   }
+}
 remove_header <- function(x) { gsub("<thead>.*</thead>", "", x) }
 ```
 
