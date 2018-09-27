@@ -6,7 +6,7 @@ editableDTUI <- function(id) {
       inline(actionButton(ns("addRow"), "Add New", icon = icon("plus", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("editData"), "Edit Data", icon = icon("wrench", lib = "glyphicon")), va = "middle"),
       inline(radioButtons(ns("selection"), "Data Selection", choices = c("single", "multiple"), inline = TRUE), va = "middle"),
-      inline(actionButton(ns("savedata"), label = "Save as csv", icon = icon("save", lib = "glyphicon")), va = "middle")
+      inline(actionButton(ns("savedata"), label = "Save change", icon = icon("save", lib = "glyphicon")), va = "middle")
     ),
     br(),
     DT::dataTableOutput(ns("origTable"))

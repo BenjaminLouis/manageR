@@ -2,10 +2,10 @@ editBillsUI <- function(id, mode = "bill") {
   ns <- NS(id)
   fluidPage(
     fluidRow(
-      #inline(actionButton(ns("delRow"), "Delete", icon = icon("remove", lib = "glyphicon")), va = "middle"),
-      inline(actionButton(ns("add"), paste0("New ", mode), icon = icon("plus", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("add"), paste("New", mode), icon = icon("plus", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("delRow"), paste("Delete", mode), icon = icon("remove", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("edit"), "Edit status", icon = icon("wrench", lib = "glyphicon")), va = "middle"),
-      inline(actionButton(ns("savedata"), label = "Save as csv", icon = icon("floppy-save", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("savedata"), label = "Save change", icon = icon("floppy-save", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("downloadpdf"), label = "Download PDF", icon = icon("download-alt", lib = "glyphicon")), va = "middle")
     ),
     br(),
@@ -55,11 +55,13 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     if (length(ids) > 0) {
       x <- tibble::as_tibble(df())
       z <- tibble::as_tibble(dfserv())
-      idest <- x$ID_Quote
+      if (mode == "quote") {
+        idest <- x$ID_Quote[ids]
+        newservices <<- z %>%
+          filter(ID_Quote != idest)
+      }
       x <- x[-ids, ]
       newdf <<- x
-      newservices <<- z %>%
-        filter(ID_Quote != idest)
       rv$update <- rv$update + 1
     }
     else {
