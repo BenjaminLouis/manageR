@@ -5,7 +5,8 @@ editBillsUI <- function(id, mode = "bill") {
       #inline(actionButton(ns("delRow"), "Delete", icon = icon("remove", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("add"), paste0("New ", mode), icon = icon("plus", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("edit"), "Edit status", icon = icon("wrench", lib = "glyphicon")), va = "middle"),
-      inline(actionButton(ns("savedata"), label = "Save as csv", icon = icon("save", lib = "glyphicon")), va = "middle")
+      inline(actionButton(ns("savedata"), label = "Save as csv", icon = icon("floppy-save", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("downloadpdf"), label = "Download PDF", icon = icon("download-alt", lib = "glyphicon")), va = "middle")
     ),
     br(),
     DT::dataTableOutput(ns("origTable"))
@@ -13,7 +14,7 @@ editBillsUI <- function(id, mode = "bill") {
 }
 
 
-editBills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), estimatesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill") {
+editBills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), quotesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill") {
   
   rv <- reactiveValues(no = 1, update = 0)#, newdf = newdf)
   newdf <- NA # pour éviter un erreur avec l'utilisation de '<<-' qui est nécessaire
@@ -54,11 +55,11 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     if (length(ids) > 0) {
       x <- tibble::as_tibble(df())
       z <- tibble::as_tibble(dfserv())
-      idest <- x$ID_Estimate
+      idest <- x$ID_Quote
       x <- x[-ids, ]
       newdf <<- x
       newservices <<- z %>%
-        filter(ID_Estimate != idest)
+        filter(ID_Quote != idest)
       rv$update <- rv$update + 1
     }
     else {
@@ -97,7 +98,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         title = paste0("New ", mode), 
         uiOutput(ns("displayadd")),
         footer = tagList(
-          if (mode == "estimate") {actionButton(ns("reset_page"),"Reset", icon = icon("refresh", lib = "glyphicon"))},
+          if (mode == "quote") {actionButton(ns("reset_page"),"Reset", icon = icon("refresh", lib = "glyphicon"))},
           actionButton(ns("update"), "Update", icon = icon("ok", lib = "glyphicon")),
           modalButton("Close", icon = icon("eject", lib = "glyphicon"))
         ), 
@@ -133,9 +134,9 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     mydf <- df()
     incr <- nrow(mydf) + 1
     mylist <- list()
-    if (mode == "estimate") {
+    if (mode == "quote") {
       mylist[[1]] <- fluidRow(column(width = 6,
-                                     textInput(ns("id_est"), label = "ID_Estimate", value = paste0("D", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
+                                     textInput(ns("id_est"), label = "ID_Quote", value = paste0("D", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
                               column(width = 6,
                                      dateInput(inputId = ns("date"), label = "Date", format = "dd-mm-yyyy"))
                               )
@@ -164,8 +165,8 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     }
     if (mode == "bill") {
       mylist <- list()
-      mylist[[1]] <- h4("Selection of associated cost estimates")
-      mylist[[2]] <- selectizeInput(inputId = ns("which_est"), label = NULL, choices = c("", estimatesdata()$ID_Estimate))
+      mylist[[1]] <- h4("Selection of associated quote")
+      mylist[[2]] <- selectizeInput(inputId = ns("which_est"), label = NULL, choices = c("", quotesdata()$ID_Quote))
       mylist[[3]] <- h4("Bill information")
       mylist[[4]] <- fluidRow(column(width = 6,
                                      textInput(ns("id_bill"), label = "ID_Bill", value = paste0("F", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
@@ -175,7 +176,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       mylist[[5]] <- strong("Client : ", textOutput(ns("which_client"), inline = TRUE))
       mulist[[6]] <- br()
       mylist[[7]] <- fluidRow(column(width = 6,
-                                     selectizeInput(inputId = ns("id_billing_address"), label = "Billing Address", choices = c("", pull(filter(billingaddressesdata(), ID_Client == pull(filter(estimatesdata(), ID_Estimate == input$which_est), ID_Client)), ID_Address)))),
+                                     selectizeInput(inputId = ns("id_billing_address"), label = "Billing Address", choices = c("", pull(filter(billingaddressesdata(), ID_Client == pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)), ID_Address)))),
                               column(width = 6,
                                      br(),
                                      verbatimTextOutput(ns("billing_info")))
@@ -216,8 +217,8 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
                   ifelse(!is.na(Postal_code), Postal_code, ""), " ", ifelse(!is.na(City), City, ""), "\n",
                   ifelse(!is.na(Country), paste0(Country, "\n"), "")))
     })
-    which_client <- estimatesdata() %>%
-      filter(ID_Estimate == input$which_est) %>%
+    which_client <- quotesdata() %>%
+      filter(ID_Quote == input$which_est) %>%
       pull(ID_Client)
     output$which_client <- renderText(which_client)
     which_workplace <- clientsdata() %>%
@@ -280,7 +281,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       mylist[[6]] <- hr()
       mydf <- tibble::as_tibble(mydf[rv$no,])
       mylist[[7]] <- inline(textInput(ns("status"), label = "Status", value = mydf$Status))
-      if (mode == "estimate") {
+      if (mode == "quote") {
         mylist[[8]] <- inline(textInput(ns("comment"), label = "Comment", value = mydf$Status_comment))
       }
       if (mode == "bill") {
@@ -303,22 +304,22 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     x1 <- tibble::add_row(x)
     rv$no <- nrow(x1)
     ids <- rv$no
-    if (mode == "estimate") {
-      x1$ID_Estimate[ids] <- input$id_est
+    if (mode == "quote") {
+      x1$ID_Quote[ids] <- input$id_est
       x1$ID_Client[ids] <- input$dclient
       x1$Date[ids] <- parse_date(input$date, format = "%d-%m-%Y")
       x1$Status[ids] <- "In_progress"
       x1$Status_comment[ids] <- ""
-      z <- bind_cols(tibble::tibble(ID_Estimate = rep(x1$ID_Estimate[ids], nrow(rv$datapresta)),
+      z <- bind_cols(tibble::tibble(ID_Quote = rep(x1$ID_Quote[ids], nrow(rv$datapresta)),
                                        N_Service = 1:nrow(rv$datapresta)),
                             presta)
       z <- bind_rows(dd, z)
     }
     if (mode == "bill") {
-      serv <- filter(dd, ID_Estimate == input$which_est)
+      serv <- filter(dd, ID_Quote == input$which_est)
       amount <- sum(serv$Quantity*serv$Unit_price)
       x1$ID_Bill[ids] <- input$id_bill
-      x1$ID_Client[ids] <- pull(filter(estimatesdata(), ID_Estimate == input$which_est), ID_Client)
+      x1$ID_Client[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)
       x1$ID_Address[ids] <- input$id_billing_address
       x1$Date[ids] <- parse_date(input$date, format = "%d-%m-%Y")
       x1$Amount[ids] <- amount
@@ -337,7 +338,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     ids <- rv$no
     x$Status[ids] <- input$status
     rv$update <- rv$update + 1
-    if (mode == "estimate") {
+    if (mode == "quote") {
       x$Status_comment[ids] <- input$comment
     }
     if (mode == "bill") {
@@ -394,7 +395,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     if (!is.null(mydf)) {
       mydf <- tibble::as_tibble(mydf[rv$no, ])
       updateTextInput(session, "status", value = mydf$Status)
-      if (mode == "estimate") {
+      if (mode == "quote") {
         updateTextInput(session, "comment", value = mydf$Status_comment)
       }
       if (mode == "bill") {
@@ -428,7 +429,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   observeEvent(input$save, {
     ns <- session$ns
     write_delim(x = df(), path = normalizePath(file.path(path(), filename[1])), delim = input$sep)
-    if (mode == "estimate") { write_delim(x = dfserv(), path = normalizePath(file.path(path(), filename[2])), delim = input$sep) }
+    if (mode == "quote") { write_delim(x = dfserv(), path = normalizePath(file.path(path(), filename[2])), delim = input$sep) }
     removeModal()
   })
   
@@ -439,7 +440,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   })
   
   # Return
-  if (mode == "estimate") {
+  if (mode == "quote") {
     return(list(data = reactive(df()), serv = reactive(dfserv())))
   }
   if (mode == "bill") { 

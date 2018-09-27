@@ -11,7 +11,7 @@ ui <- dashboardPage(
     sidebarMenu(
       id = "tabs",
       menuItem("Home", tabName = "home", icon = icon("home")),
-      menuItem("Cost estimates", tabName = "estimates", icon = icon("money")),
+      menuItem("Quotes", tabName = "quotes", icon = icon("money")),
       menuItem("Bills", tabName = "bills", icon = icon("bills")),
       menuItem("Budget", tabName = "budget", icon = icon("euro")),
       menuItem("Clients", tabName = "clients", icon = icon("address-card")),
@@ -36,12 +36,12 @@ ui <- dashboardPage(
         loadingOptionsUI("files")
       ),
       
-      # Cost estimates tab
+      # Quotes tab
       #-------------------
       tabItem(
-        tabName = "estimates",
-        h4("Cost estimates management"),
-        editBillsUI("estimates", mode = "estimate")
+        tabName = "quotes",
+        h4("Quotes management"),
+        editBillsUI("quotes", mode = "quote")
       ),
       
       # Bills tab
