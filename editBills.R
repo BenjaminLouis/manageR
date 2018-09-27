@@ -95,19 +95,34 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   addData <- reactive({
     input$add
     ns <- session$ns
-    showModal(
-      modalDialog(
-        title = paste0("New ", mode), 
-        uiOutput(ns("displayadd")),
-        footer = tagList(
-          if (mode == "quote") {actionButton(ns("reset_page"),"Reset", icon = icon("refresh", lib = "glyphicon"))},
-          actionButton(ns("update"), "Update", icon = icon("ok", lib = "glyphicon")),
-          modalButton("Close", icon = icon("eject", lib = "glyphicon"))
-        ), 
-        easyClose = TRUE, 
-        size = "l"
+    if (mode == "quote") {
+      showModal(
+        modalDialog(
+          title = "New quote", 
+          uiOutput(ns("displayaddquote")),
+          footer = tagList(
+            actionButton(ns("reset_page"),"Reset", icon = icon("refresh", lib = "glyphicon")),
+            actionButton(ns("update"), "Add new", icon = icon("ok", lib = "glyphicon")),
+            modalButton("Close", icon = icon("eject", lib = "glyphicon"))
+          ), 
+          easyClose = TRUE, 
+          size = "l"
+        )
       )
-    )
+    }
+    if (mode == "bill") {
+        showModal(
+          modalDialog(
+            title = "New bill",
+            uiOutput(ns("whichdisplayaddbill")),
+            footer = tagList(
+              modalButton("Close", icon = icon("eject", lib = "glyphicon"))
+            ), 
+            easyClose = TRUE, 
+            size = "l"
+          )
+        )
+    }
   })
   
   # Modal dialog to edit data
@@ -120,7 +135,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         title = paste0("Edit ", mode), 
         uiOutput(ns("displayedit")),
         footer = tagList(
-          actionButton(ns("update_status"), "Update", icon = icon("ok", lib = "glyphicon")),
+          actionButton(ns("update_status"), "Save", icon = icon("ok", lib = "glyphicon")),
           modalButton("Close", icon = icon("eject", lib = "glyphicon"))
         ), 
         easyClose = TRUE, 
@@ -131,61 +146,38 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   
   # UI adding data to edit in modal dialog
   # --------------------------------------
-  output$displayadd <- renderUI({
+  output$displayaddquote <- renderUI({
     ns <- session$ns
     mydf <- df()
     incr <- nrow(mydf) + 1
     mylist <- list()
-    if (mode == "quote") {
-      mylist[[1]] <- fluidRow(column(width = 6,
-                                     textInput(ns("id_est"), label = "ID_Quote", value = paste0("D", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
-                              column(width = 6,
-                                     dateInput(inputId = ns("date"), label = "Date", format = "dd-mm-yyyy"))
-                              )
-      mylist[[2]] <- h4("Client selection")
-      mylist[[3]] <- fluidRow(column(width = 6,
-                                     selectizeInput(inputId = ns("dclient"), label = "ID Client", choices = c("", clientsdata()$ID_Client)),
-                                     selectizeInput(inputId = ns("dclient2"), label = "Name", choices = c("", paste(clientsdata()$Firstname, clientsdata()$Name, sep = " ")))
-                              ),
-                              column(width = 6,
-                                     br(),
-                                     verbatimTextOutput(ns("client_info"))
-                              )
-                      )
-      mylist[[4]] <- h4("Description des prestations")
-      mylist[[5]] <- shiny::tableOutput(ns("allservice"))
-      mylist[[6]] <- br()
-      mylist[[7]] <- fluidRow(
-                      column(width = 6, textAreaInput(inputId = ns("design"), label = "Designation", resize = "none", value = "")),
-                      column(width = 2, numericInput(inputId = ns("qtity"), label = "Quantity", value = 0)),
-                      column(width = 2, textInput(inputId = ns("unit"), label = "Unit", value = "")),
-                      column(width = 2, numericInput(inputId = ns("price"), label = "Price", value = 0))
-                    )
-      mylist[[8]] <- actionButton(inputId = ns("add_service"), label = "Add service")
-      mylist[[9]] <- br()
-      mylist[[10]] <- numericInput(inputId = ns("discount"), label = "Discount (%)", value = 0, min = 0, max = 100, step = 1)
-    }
-    if (mode == "bill") {
-      mylist <- list()
-      mylist[[1]] <- h4("Selection of associated quote")
-      mylist[[2]] <- selectizeInput(inputId = ns("which_est"), label = NULL, choices = c("", quotesdata()$ID_Quote))
-      mylist[[3]] <- h4("Bill information")
-      mylist[[4]] <- fluidRow(column(width = 6,
-                                     textInput(ns("id_bill"), label = "ID_Bill", value = paste0("F", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
-                              column(width = 6,
-                                     dateInput(inputId = ns("date"), label = "Date", format = "dd-mm-yyyy"))
-      )
-      mylist[[5]] <- strong("Client : ", textOutput(ns("which_client"), inline = TRUE))
-      mulist[[6]] <- br()
-      mylist[[7]] <- fluidRow(column(width = 6,
-                                     selectizeInput(inputId = ns("id_billing_address"), label = "Billing Address", choices = c("", pull(filter(billingaddressesdata(), ID_Client == pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)), ID_Address)))),
-                              column(width = 6,
-                                     br(),
-                                     verbatimTextOutput(ns("billing_info")))
-      )
-      mylist[[8]] <- br()
-      mylist[[9]] <- numericInput(inputId = ns("deposit"), label = "Deposit", value = 0, min = 0, max = NA, step = 1)
-    }
+    mylist[[1]] <- fluidRow(column(width = 6,
+                                   textInput(ns("id_est"), label = "ID_Quote", value = paste0("D", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
+                            column(width = 6,
+                                   dateInput(inputId = ns("date"), label = "Date", format = "dd-mm-yyyy"))
+    )
+    mylist[[2]] <- h4("Client selection")
+    mylist[[3]] <- fluidRow(column(width = 6,
+                                   selectizeInput(inputId = ns("dclient"), label = "ID Client", choices = c("", clientsdata()$ID_Client)),
+                                   selectizeInput(inputId = ns("dclient2"), label = "Name", choices = c("", paste(clientsdata()$Firstname, clientsdata()$Name, sep = " ")))
+    ),
+    column(width = 6,
+           br(),
+           verbatimTextOutput(ns("client_info"))
+    )
+    )
+    mylist[[4]] <- h4("Description des prestations")
+    mylist[[5]] <- shiny::tableOutput(ns("allservice"))
+    mylist[[6]] <- br()
+    mylist[[7]] <- fluidRow(
+      column(width = 6, textAreaInput(inputId = ns("design"), label = "Designation", resize = "none", value = "")),
+      column(width = 2, numericInput(inputId = ns("qtity"), label = "Quantity", value = 0)),
+      column(width = 2, textInput(inputId = ns("unit"), label = "Unit", value = "")),
+      column(width = 2, numericInput(inputId = ns("price"), label = "Price", value = 0))
+    )
+    mylist[[8]] <- actionButton(inputId = ns("add_service"), label = "Add service")
+    mylist[[9]] <- br()
+    mylist[[10]] <- numericInput(inputId = ns("discount"), label = "Discount (%)", value = 0, min = 0, max = 100, step = 1)
     do.call(tagList, mylist)
   })
   ##### A COMMENTER ######
@@ -210,6 +202,79 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
                 ifelse(!is.na(Office_line), paste0(Office_line, "\n"), ""),
                 ifelse(!is.na(e_mail), paste0(e_mail, "\n"), "")))
   })
+  
+  
+  # UI to choose which type of bill adder to display
+  # -------------------------------------------------
+  output$whichdisplayaddbill <- renderUI({
+    ns <- session$ns
+    mylist <- list()
+    mylist[[1]] <- h4("Selection of associated quote")
+    if (nrow(quotesdata()) > 0) {
+      mylist[[2]] <- fluidRow(
+        column(width = 6, selectizeInput(inputId = ns("which_est"), label = NULL, choices = c("", quotesdata()$ID_Quote))),
+        column(width = 6, actionButton(inputId = ns("gobill"), label = "Go !"))
+      )
+      mylist[[3]] <- actionButton(inputId = ns("noquote"), label = "No associated quote")
+    } else {
+      mylist[[2]] <- actionButton(inputId = ns("noquote"), label = "No associated quote")
+    }
+    do.call(tagList, mylist)
+  })
+  
+  # Modal to add new bill from a quote
+  # ----------------------------------
+  observeEvent(input$gobill, {
+    ns <- session$ns
+    showModal(
+      modalDialog(
+        title = "New bill", 
+        uiOutput(ns("bill_with_quote")),
+        footer = tagList(
+          modalButton("Close", icon = icon("eject", lib = "glyphicon"))
+        ), 
+        easyClose = TRUE, 
+        size = "l"
+      )
+    )
+  })
+  
+  # Modal to add new bill with no associated quote
+  # ----------------------------------------------
+  observeEvent(input$noquote, {
+    showModal(modalDialog(
+      title = "New bill", "Please add an associated quote first",
+      easyClose = TRUE, footer = modalButton("OK"), size = "l"
+    ))
+  })
+  
+  
+  # UI to add new bill from a quote
+  # -------------------------------
+  output$bill_with_quote <- renderUI({
+    ns <- session$ns
+    mydf <- df()
+    incr <- nrow(mydf) + 1
+    mylist <- list()
+    mylist[[1]] <- h4("Bill information")
+    mylist[[2]] <- fluidRow(column(width = 6,
+                                   textInput(ns("id_bill"), label = "ID_Bill", value = paste0("F", format(Sys.Date(), "%y%m"), "-", paste0(rep(0, 4 - nchar(incr)), collapse = ""), incr))),
+                            column(width = 6,
+                                   dateInput(inputId = ns("date"), label = "Date", format = "dd-mm-yyyy"))
+    )
+    mylist[[3]] <- strong("Client : ", textOutput(ns("which_client"), inline = TRUE))
+    mylist[[4]] <- br()
+    mylist[[5]] <- fluidRow(column(width = 6,
+                                   selectizeInput(inputId = ns("id_billing_address"), label = "Billing Address", choices = c("", pull(filter(billingaddressesdata(), ID_Client == pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)), ID_Address)))),
+                            column(width = 6,
+                                   br(),
+                                   verbatimTextOutput(ns("billing_info")))
+    )
+    mylist[[6]] <- br()
+    mylist[[7]] <- numericInput(inputId = ns("deposit"), label = "Deposit", value = 0, min = 0, max = NA, step = 1)
+    do.call(tagList, mylist)
+  })
+  # A COMMENTER
   observeEvent(input$which_est, {
     output$billing_info <- renderText({
       with(billingaddressesdata()[billingaddressesdata()$ID_Address == input$id_billing_address, ],
@@ -231,7 +296,6 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       pull(ID_Address)
     updateSelectizeInput(session, inputId = "id_billing_address", choices = c("", which_addr))
   })
-  
   
   
   # DEFINITION PRESTATIONS
