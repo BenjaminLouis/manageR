@@ -120,8 +120,8 @@ lconfig$address3 <- concatenate(lconfig$postal_code, lconfig$city)
 lconfig <- lconfig[c("address1", "address2", "address3", "mobile", "e_mail", "web", "siret")]
 if (!is.na(lconfig$siret)) { lconfig$siret <- paste(":", lconfig$siret)}
 lconfig <- lconfig[!is.na(lconfig)]
-address = insert_fa("envelope")
-mobile = insert_fa("mobile")
+address = insert_fa("home")
+mobile = insert_fa("mobile-alt")
 e_mail = insert_fa("at")
 web = insert_fa("globe")
 siret = "Siret" 
@@ -260,11 +260,11 @@ data <- tibble('Désignation' = character(),
 #}
 data %>%
   kable(format = "html") %>%
-  column_spec(column = 1, width = "42%") %>%
-  column_spec(column = 2, width = "13%") %>%
-  column_spec(column = 3, width = "12%") %>%
-  column_spec(column = 4, width = "18%") %>%
-  column_spec(column = 5, width = "15%") %>%
+  column_spec(column = 1, width = "42%", extra_css = "text-align:justify;") %>%
+  column_spec(column = 2, width = "13%", extra_css = "text-align:right;") %>%
+  column_spec(column = 3, width = "12%", extra_css = "text-align:right;") %>%
+  column_spec(column = 4, width = "18%", extra_css = "text-align:right;") %>%
+  column_spec(column = 5, width = "15%", extra_css = "text-align:right;") %>%
   HTML()
 ```
 

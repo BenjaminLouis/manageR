@@ -12,6 +12,15 @@
   margin-right: 10mm;
   font-size: 12pt;
   line-height: 0mm;
+  @bottom-left {
+    content: $doc " n° " $ndoc;
+  }
+  @bottom-right {
+    content: "Page " counter(page) "/" counter(pages);
+  }
+}
+
+@page :first {
   @top-right {
     content: $doc;
     text-align: left;
@@ -19,12 +28,6 @@
     text-transform: uppercase;
     font-size: 23pt;
     margin-right: 40mm;
-  }
-  @bottom-left {
-    content: $doc " n° " $ndoc;
-  }
-  @bottom-right {
-    content: "Page " counter(page) "/" counter(pages);
   }
 }
 
@@ -154,7 +157,7 @@ footer {
   padding-bottom: 3mm;
   padding-left: 0;
   padding-right: 0;
-  background-color: rgba(100, 100, 100, 0.5);
+  background-color: rgba(100, 100, 100, 0.3);
   & p{
     line-height: 0mm;
     font-size: 10pt;
@@ -191,8 +194,10 @@ footer {
 .services {
   margin-top: 5mm;
   & > table {
+    page-break-inside: auto;
     margin: 0;
     width: 100%;
+    border-top: 1px solid black;
     border-bottom: 1px solid black;
     border-collapse: collapse;
     & > thead {
@@ -210,10 +215,15 @@ footer {
       }
     }
   }
+  & tbody {
+    font-size: 11pt;
+  }
   & td {
     border-left: 1px solid black;
-    padding: 5px;
-    text-align: right;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    padding-left: 10px;
+    padding-right: 10px;
     &:last-child {
       border-right: 1px solid black;
     }
