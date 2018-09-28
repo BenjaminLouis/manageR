@@ -73,7 +73,7 @@ footer {
 [class*='col-'] {
   float: left;
   min-height: 1px;
-  width: 100% / 12;
+  /*width: 100% / 12;
   /*-- our gutter -- */
   /*padding: 0px; */
   /*background-color: #FFDCDC;*/

@@ -1,2 +1,2 @@
-ID_Quote;ID_Client;Date;Status;Status_comment
-D1809-0001;C1809-0002;17-09-2018;In_progress;
+ID_Quote;ID_Client;Date;Amount;Discount;Net_payable;Status;Status_comment
+D1809-0001;C1809-0001;28-09-2018;645;5;612.75;In_progress;

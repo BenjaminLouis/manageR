@@ -16,6 +16,11 @@ editBillsUI <- function(id, mode = "bill") {
 
 editBills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), quotesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill") {
   
+  #####################################################
+  ##############  INITIALISATION   ####################
+  #####################################################
+  
+  
   rv <- reactiveValues(no = 1, update = 0)#, newdf = newdf)
   newdf <- NA # pour éviter un erreur avec l'utilisation de '<<-' qui est nécessaire
   newservices <- NA # pour éviter un erreur avec l'utilisation de '<<-' qui est nécessaire
@@ -48,46 +53,14 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
      )
   })
   
-  # Delete button
-  # -------------
-  observeEvent(input$delRow, {
-    ids <- input$origTable_rows_selected
-    if (length(ids) > 0) {
-      x <- tibble::as_tibble(df())
-      z <- tibble::as_tibble(dfserv())
-      if (mode == "quote") {
-        idest <- x$ID_Quote[ids]
-        newservices <<- z %>%
-          filter(ID_Quote != idest)
-      }
-      x <- x[-ids, ]
-      newdf <<- x
-      rv$update <- rv$update + 1
-    }
-    else {
-      showModal(modalDialog(
-        title = "Delete Row", "Please Select Row(s) To Delete. Press 'Esc' or Press 'OK' button",
-        easyClose = TRUE, footer = modalButton("OK"), size = "l"
-      ))
-    }
-  })
+  #################################################
+  ##############  ADD BUTTON   ####################
+  #################################################
   
   # Add New button
   # --------------
   observeEvent(input$add, {
     addData()
-  })
-  
-  # Edit Data button
-  # ----------------
-  observeEvent(input$edit, {
-    ids <- input$origTable_rows_selected
-    if (length(ids) == 1) {
-      rv$no <- ids
-    } else if (rv$no > nrow(df())) {
-      rv$no <- 1
-    }
-    editData()
   })
   
   # Modal dialog to add data
@@ -111,41 +84,22 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       )
     }
     if (mode == "bill") {
-        showModal(
-          modalDialog(
-            title = "New bill",
-            uiOutput(ns("whichdisplayaddbill")),
-            footer = tagList(
-              modalButton("Close", icon = icon("eject", lib = "glyphicon"))
-            ), 
-            easyClose = TRUE, 
-            size = "l"
-          )
+      showModal(
+        modalDialog(
+          title = "New bill",
+          uiOutput(ns("whichdisplayaddbill")),
+          footer = tagList(
+            modalButton("Close", icon = icon("eject", lib = "glyphicon"))
+          ), 
+          easyClose = TRUE, 
+          size = "l"
         )
+      )
     }
   })
   
-  # Modal dialog to edit data
-  # -------------------------
-  editData <- reactive({
-    input$edit
-    ns <- session$ns
-    showModal(
-      modalDialog(
-        title = paste0("Edit ", mode), 
-        uiOutput(ns("displayedit")),
-        footer = tagList(
-          actionButton(ns("update_status"), "Save", icon = icon("ok", lib = "glyphicon")),
-          modalButton("Close", icon = icon("eject", lib = "glyphicon"))
-        ), 
-        easyClose = TRUE, 
-        size = "l"
-      )
-    )
-  })
-  
-  # UI adding data to edit in modal dialog
-  # --------------------------------------
+  # UI TO add QUOTE data
+  # ---------------------
   output$displayaddquote <- renderUI({
     ns <- session$ns
     mydf <- df()
@@ -202,6 +156,37 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
                 ifelse(!is.na(Office_line), paste0(Office_line, "\n"), ""),
                 ifelse(!is.na(e_mail), paste0(e_mail, "\n"), "")))
   })
+  # DEFINITION PRESTATIONS
+  dttemp <- reactive({    
+    tibble::tibble(
+      Designation = input$design,
+      Quantity = input$qtity,
+      Unit = input$unit,
+      Unit_price = input$price
+    )})
+  # Action du bouton pour ajouter des lignes de presta
+  observeEvent(input$add_service, {
+    rv$datapresta <- rbind(rv$datapresta, dttemp())
+    output$allservice <- shiny::renderTable(rv$datapresta)
+    #show("allservice")
+    #rv$datapresta[,'Quantity'] <- gsub("[.]", ",", as.character(unlist(rv$datapresta[,'Quantity'])))
+    #rv$datapresta[,'Unit_price'] <- gsub("[.]", ",", as.character(unlist(rv$datapresta[,'Unit_price'])))
+    updateTextAreaInput(session, "design", value = "")
+    updateNumericInput(session, "qtity", value = 0)
+    updateTextInput(session, "unit", value = "")
+    updateNumericInput(session, "price", value = 0)
+  })
+  # Resetting 'devis' creation page
+  observeEvent(input$reset_page, {
+    rv$datapresta <- tibble::tibble(
+      Designation = vector(mode = "character"),
+      Quantity = vector(mode = "double"),
+      Unit = vector(mode = "character"),
+      Unit_price = vector(mode = "double")
+    )
+    shinyjs::hide("allservice")
+    #reset("create_devis_page")
+  })
   
   
   # UI to choose which type of bill adder to display
@@ -231,6 +216,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         title = "New bill", 
         uiOutput(ns("bill_with_quote")),
         footer = tagList(
+          actionButton(ns("update"), "Add new", icon = icon("ok", lib = "glyphicon")),
           modalButton("Close", icon = icon("eject", lib = "glyphicon"))
         ), 
         easyClose = TRUE, 
@@ -264,8 +250,17 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     )
     mylist[[3]] <- strong("Client : ", textOutput(ns("which_client"), inline = TRUE))
     mylist[[4]] <- br()
+    which_client <- quotesdata() %>%
+      filter(ID_Quote == input$which_est) %>%
+      pull(ID_Client)
+    which_workplace <- clientsdata() %>%
+      filter(ID_Client == which_client) %>%
+      pull(ID_Workplace)
+    which_addr <- billingaddressesdata() %>% 
+      filter(ID_Workplace == which_workplace) %>%
+      pull(ID_Address)
     mylist[[5]] <- fluidRow(column(width = 6,
-                                   selectizeInput(inputId = ns("id_billing_address"), label = "Billing Address", choices = c("", pull(filter(billingaddressesdata(), ID_Client == pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)), ID_Address)))),
+                                   selectizeInput(inputId = ns("id_billing_address"), label = "Billing Address", choices = c("", which_addr))),
                             column(width = 6,
                                    br(),
                                    verbatimTextOutput(ns("billing_info")))
@@ -276,6 +271,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   })
   # A COMMENTER
   observeEvent(input$which_est, {
+    req(input$which_est)
     output$billing_info <- renderText({
       with(billingaddressesdata()[billingaddressesdata()$ID_Address == input$id_billing_address, ],
            paste0(ifelse(!is.na(Company) | !is.na(Department), paste0(Company, " ", Department, "\n"), ""),
@@ -298,39 +294,115 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   })
   
   
-  # DEFINITION PRESTATIONS
-  dttemp <- reactive({    
-    tibble::tibble(
-      Designation = input$design,
-      Quantity = input$qtity,
-      Unit = input$unit,
-      Unit_price = input$price
-    )})
-  # Action du bouton pour ajouter des lignes de presta
-  observeEvent(input$add_service, {
-    rv$datapresta <- rbind(rv$datapresta, dttemp())
-    output$allservice <- shiny::renderTable(rv$datapresta)
-    #show("allservice")
-    #rv$datapresta[,'Quantity'] <- gsub("[.]", ",", as.character(unlist(rv$datapresta[,'Quantity'])))
-    #rv$datapresta[,'Unit_price'] <- gsub("[.]", ",", as.character(unlist(rv$datapresta[,'Unit_price'])))
-    updateTextAreaInput(session, "design", value = "")
-    updateNumericInput(session, "qtity", value = 0)
-    updateTextInput(session, "unit", value = "")
-    updateNumericInput(session, "price", value = 0)
-  })
-  # Resetting 'devis' creation page
-  observeEvent(input$reset_page, {
-    rv$datapresta <- tibble::tibble(
-      Designation = vector(mode = "character"),
-      Quantity = vector(mode = "double"),
-      Unit = vector(mode = "character"),
-      Unit_price = vector(mode = "double")
-    )
-    shinyjs::hide("allservice")
-    #reset("create_devis_page")
+  # Update (add new) button
+  # -----------------------
+  observeEvent(input$update, {
+    x <- tibble::as_tibble(df())
+    dd <- tibble::as_tibble(dfserv())
+    x1 <- tibble::add_row(x)
+    rv$no <- nrow(x1)
+    ids <- rv$no
+    if (mode == "quote") {
+      presta <- tibble::as_tibble(isolate(rv$datapresta))
+      amount <- sum(presta$Quantity*presta$Unit_price)
+      x1$ID_Quote[ids] <- input$id_est
+      x1$ID_Client[ids] <- input$dclient
+      x1$Date[ids] <- as.character(format(ymd(input$date), "%d-%m-%Y"))
+      x1$Amount[ids] <- amount
+      x1$Discount[ids] <- input$discount
+      x1$Net_payable <- amount*(1 - (input$discount/100))
+      x1$Status[ids] <- "In_progress"
+      x1$Status_comment[ids] <- ""
+      z <- bind_cols(tibble::tibble(ID_Quote = rep(x1$ID_Quote[ids], nrow(rv$datapresta)),
+                                    ID_Bill = rep("", nrow(rv$datapresta)),
+                                    N_Service = 1:nrow(rv$datapresta)),
+                     presta)
+      z <- bind_rows(dd, z)
+    }
+    if (mode == "bill") {
+      dd[dd$ID_Quote == input$which_est, "ID_Bill"] <- input$id_bill
+      z <- dd
+      serv <- filter(dd, ID_Quote == input$which_est)
+      amount <- sum(serv$Quantity*serv$Unit_price)
+      x1$ID_Bill[ids] <- input$id_bill
+      x1$ID_Client[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)
+      x1$ID_Address[ids] <- input$id_billing_address
+      x1$Date[ids] <-  as.character(format(ymd(input$date), "%d-%m-%Y")) 
+      x1$Amount[ids] <- amount
+      x1$Discount[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), Discount)
+      x1$Deposit[ids] <- input$deposit
+      x1$Net_payable <- amount*(1 - (x1$Discount[ids]/100)) - input$deposit
+      x1$Status[ids] <- "In_progress"
+      x1$Payment[ids] <- ""
+    }
+    newdf <<- x1
+    newservices <<- z
+    rv$update <- rv$update + 1
   })
   
-
+  ####################################################
+  ##############  DELETE BUTTON   ####################
+  ####################################################
+  
+  # Delete button
+  # -------------
+  observeEvent(input$delRow, {
+    ids <- input$origTable_rows_selected
+    if (length(ids) > 0) {
+      x <- tibble::as_tibble(df())
+      z <- tibble::as_tibble(dfserv())
+      if (mode == "quote") {
+        idest <- x$ID_Quote[ids]
+        newservices <<- z %>%
+          filter(ID_Quote != idest)
+      }
+      x <- x[-ids, ]
+      newdf <<- x
+      rv$update <- rv$update + 1
+    }
+    else {
+      showModal(modalDialog(
+        title = "Delete Row", "Please Select Row(s) To Delete. Press 'Esc' or Press 'OK' button",
+        easyClose = TRUE, footer = modalButton("OK"), size = "l"
+      ))
+    }
+  })
+  
+  ####################################################
+  ################  EDIT BUTTON   ####################
+  ####################################################
+  
+  # Edit Data button
+  # ----------------
+  observeEvent(input$edit, {
+    ids <- input$origTable_rows_selected
+    if (length(ids) == 1) {
+      rv$no <- ids
+    } else if (rv$no > nrow(df())) {
+      rv$no <- 1
+    }
+    editData()
+  })
+  
+  # Modal dialog to edit data
+  # -------------------------
+  editData <- reactive({
+    input$edit
+    ns <- session$ns
+    showModal(
+      modalDialog(
+        title = paste0("Edit ", mode), 
+        uiOutput(ns("displayedit")),
+        footer = tagList(
+          actionButton(ns("update_status"), "Save", icon = icon("ok", lib = "glyphicon")),
+          modalButton("Close", icon = icon("eject", lib = "glyphicon"))
+        ), 
+        easyClose = TRUE, 
+        size = "l"
+      )
+    )
+  })
+  
   # UI displaying data to edit in modal dialog
   # -----------------------------------------
   output$displayedit <- renderUI({
@@ -360,43 +432,6 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     }
   })
   
-  
-  # Update button
-  # --------------
-  observeEvent(input$update, {
-    x <- tibble::as_tibble(df())
-    presta <- tibble::as_tibble(isolate(rv$datapresta))
-    dd <- tibble::as_tibble(dfserv())
-    x1 <- tibble::add_row(x)
-    rv$no <- nrow(x1)
-    ids <- rv$no
-    if (mode == "quote") {
-      x1$ID_Quote[ids] <- input$id_est
-      x1$ID_Client[ids] <- input$dclient
-      x1$Date[ids] <- parse_date(input$date, format = "%d-%m-%Y")
-      x1$Status[ids] <- "In_progress"
-      x1$Status_comment[ids] <- ""
-      z <- bind_cols(tibble::tibble(ID_Quote = rep(x1$ID_Quote[ids], nrow(rv$datapresta)),
-                                       N_Service = 1:nrow(rv$datapresta)),
-                            presta)
-      z <- bind_rows(dd, z)
-    }
-    if (mode == "bill") {
-      serv <- filter(dd, ID_Quote == input$which_est)
-      amount <- sum(serv$Quantity*serv$Unit_price)
-      x1$ID_Bill[ids] <- input$id_bill
-      x1$ID_Client[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)
-      x1$ID_Address[ids] <- input$id_billing_address
-      x1$Date[ids] <- parse_date(input$date, format = "%d-%m-%Y")
-      x1$Amount[ids] <- amount
-      x1$Status[ids] <- "In_progress"
-      x1$Payment[ids] <- ""
-    }
-    newdf <<- x1
-    newservices <<- z
-    rv$update <- rv$update + 1
-  })
-  
   # Update Status button
   # --------------------
   observeEvent(input$update_status, {
@@ -413,7 +448,6 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     newdf <<- x
     rv$update <- rv$update + 1
   })
-  
   
   # Backward button
   # ----------------
@@ -470,8 +504,13 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     }
   })
   
-  # Save as csv button
-  # ------------------
+  
+  ###########################################################
+  ################  SAVE CHANGE BUTTON   ####################
+  ###########################################################
+  
+  # Modal dialog to save change button
+  # ----------------------------------
   observeEvent(input$savedata, {
     ns <- session$ns
     showModal(
@@ -495,21 +534,104 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   observeEvent(input$save, {
     ns <- session$ns
     write_delim(x = df(), path = normalizePath(file.path(path(), filename[1])), delim = input$sep)
-    if (mode == "quote") { write_delim(x = dfserv(), path = normalizePath(file.path(path(), filename[2])), delim = input$sep) }
+    write_delim(x = dfserv(), path = normalizePath(file.path(path(), filename[2])), delim = input$sep)
     removeModal()
   })
   
-  # Display Datatable
-  # -----------------
+  #############################################################
+  ################  DOWNLOAD PDF BUTTON   ####################
+  ############################################################
+  
+  # Modal dialog to download pdf button
+  # -----------------------------------
+  observeEvent(input$downloadpdf, {
+    ns <- session$ns
+    ids <- input$origTable_rows_selected
+    if (length(ids) == 1) {
+      rv$no <- ids
+    } else if (rv$no > nrow(df())) {
+      rv$no <- 1
+    }
+    showModal(
+      modalDialog(
+        title = "What do you want to print ?",
+        uiOutput(ns("print_option")),
+        footer = tagList(
+          downloadButton(outputId = "printpdf", label = "Download"),
+          modalButton("Close", icon = icon("eject", lib = "glyphicon"))
+        ),
+        easyClose = TRUE,
+        size = "l"
+      ))
+  })
+  
+  # UI for print options
+  # -------------------
+  output$print_option <- renderUI({
+    ns <- session$ns
+    ids <- rv$no
+      mydf <- df()
+      mylist <- list()
+      mylist[[1]] <- inline(actionButton(inputId = ns("home"), label = NULL, icon = icon("backward", lib = "glyphicon")), m = 3)
+      mylist[[2]] <- inline(actionButton(inputId = ns("left"), label = NULL, icon = icon("chevron-left", lib = "glyphicon")), m = 3)
+      mylist[[3]] <- inline(numericInput(inputId = ns("rowno"), label = NULL, value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
+      mylist[[4]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
+      mylist[[5]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
+    if (mode == "quote") {
+      iddoc <- pull(mydf[ids,], ID_Quote)
+      mylist[[6]] <- h4(paste("Quote", iddoc))
+      amount <- round(pull(mydf[ids,], Amount), 2)
+      discount <- pull(mydf[ids,], Discount)
+      net <- round(pull(mydf[ids,], Net_payable), 2)
+      theserv <- dfserv() %>%
+        filter(ID_Quote == iddoc) %>%
+        select(Designation, Quantity, Unit, Unit_price) %>%
+        mutate(Unit_price = round(Unit_price, 2)) %>%
+        mutate(Total = round(Quantity * Unit_price, 2))
+      totdat <- tibble(
+        x = c("Amount", "Discout", "Net payable"),
+        y = c(amount, paste(discount, "%"), net)
+      )
+    }
+    if (mode == "bill") {
+      iddoc <- pull(mydf[ids,], ID_Bill)
+      mylist[[6]] <- h4(paste("Bill", iddoc))
+      amount <- round(pull(mydf[ids,], Amount), 2)
+      discount <- pull(mydf[ids,], Discount)
+      deposit <- round(pull(mydf[ids,], Deposit), 2) 
+      net <- round(pull(mydf[ids,], Net_payable), 2)
+      theserv <- dfserv() %>%
+        filter(ID_Bill == iddoc) %>%
+        select(Designation, Quantity, Unit, Unit_price) %>%
+        mutate(Unit_price = round(Unit_price, 2)) %>%
+        mutate(Total = round(Quantity * Unit_price, 2))
+      totdat <- tibble(
+        x = c("Amount", "Discout", "Deposit", "Net payable"),
+        y = c(amount, paste(discount, "%"), deposit, net)
+      )
+    }
+    mylist[[7]] <- theserv#tableOutput(ns("theserv"))
+    mylist[[8]] <- br()
+    mylist[[9]] <- totdat#tableOutput(ns("totdat"))
+    do.call(tagList, mylist)
+  })
+  
+  # Table output
+  # ------------
+ # output$theserv <- renderTable(theserv())
+  #output$totdat <- renderTable(totdat(), colnames = FALSE)
+  
+  ###########################################################
+  #################  DISPLAY DATATABLE   ####################
+  ###########################################################
+  
   output$origTable <- DT::renderDataTable({
     datatable(df(), selection = "single", caption = NULL)
   })
   
-  # Return
-  if (mode == "quote") {
-    return(list(data = reactive(df()), serv = reactive(dfserv())))
-  }
-  if (mode == "bill") { 
-    return(reactive(df()))
-  }
+  ################################################
+  #################  RETURN   ####################
+  ################################################
+  return(list(data = reactive(df()), serv = reactive(dfserv()), up = reactive(rv$update)))
+
 }
