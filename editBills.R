@@ -551,7 +551,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         title = "What do you want to print ?",
         uiOutput(ns("print_option")),
         footer = tagList(
-          downloadButton(outputId = "printpdf", label = "Download"),
+          downloadButton(outputId = ns("printpdf"), label = "Download"),
           modalButton("Close", icon = icon("eject", lib = "glyphicon"))
         ),
         easyClose = TRUE,
@@ -661,45 +661,42 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     }
     output$theserv <- renderTable(ll$services$data)
     output$totdat <- renderTable(ll$services$totdata, colnames = FALSE)
+    output$printpdf <- downloadHandler(
+      filename = paste0(ll$info$ndoc, ".html"),
+      content = function(file) {
+        # Copy the report file to a temporary directory before processing it, in
+        # case we don't have write permissions to the current working dir (which
+        # can happen when deployed).
+        tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
+        tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
+        tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
+        tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
+        tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
+        file.copy("template.Rmd", tempReport, overwrite = TRUE)
+        file.copy("template_style.scss", tempSCSS, overwrite = TRUE)
+        file.copy("name.png", tempImage, overwrite = TRUE)
+        
+        library(sassr)
+        #library(backports)
+        doc <- ll$info$doc
+        ndoc <- ll$info$ndoc
+        write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = tempVar)
+        compile_sass(file = tempSCSS, output = tempCSS)
+        
+        # Set up parameters to pass to Rmd document
+        params <- list(info = ll$info, config = ll$config, client = ll$client, services = ll$services)
+        params$config <- list(name = "Company name<br/> Services", address1 = "1 rue fictive", address2 = "test", postal_code = "01000",
+                              city = "Testcity", mobile = "+33(0)6 00 00 00 00", e_mail = "contact@email.com", web = "www.siteweb.com", 
+                              siret = "xxxxxxxxxxxxxxxxxx")
+        params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
+        
+        # knit the document
+        rmarkdown::render(tempReport, output_file = file,
+                          params = params, #output_format = weasydoc::hpdf_document_base(),
+                          envir = new.env(parent = globalenv()))
+      }
+    )
   })
-  
-
-  output$printpdf <- downloadHandler(
-    filename = function() {
-      paste0(iddoc, ".pdf")
-    },
-    content = function(file) {
-      # Copy the report file to a temporary directory before processing it, in
-      # case we don't have write permissions to the current working dir (which
-      # can happen when deployed).
-      tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
-      tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
-      tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
-      file.copy("devis.Rmd", tempReport, overwrite = TRUE)
-      file.copy("facture.cls", tempClass, overwrite = TRUE)
-      file.copy("name.png", tempImage, overwrite = TRUE)
-      
-      # Set up parameters to pass to Rmd document
-      params <- with(thisclientdevis(),
-                     list(ndoc = devis_id(),
-                          nclient = input$dclient,
-                          firstname = ifelse(!is.na(Prenom), Prenom, ""),
-                          lastname = ifelse(!is.na(Nom), Nom, ""),
-                          addr1 = ifelse(!is.na(Entreprise) | !is.na(Departement), paste0(Entreprise, " ", Departement), ""),
-                          addr2 = ifelse(!is.na(Adresse1), Adresse1, ""),
-                          addr3 = ifelse(!is.na(Adresse2), Adresse2, ""),
-                          addr4 = ifelse(!is.na(Entreprise) | !is.na(Departement), paste0(Code_Postal, " ", Ville), ""),
-                          tel = ifelse(!is.na(Tel_Fixe), Tel_Fixe, ""),
-                          mail = ifelse(!is.na(e_mail), e_mail, ""),
-                          discount = input$discount,
-                          description = desc$devis))
-      # knit the document
-      rmarkdown::render(tempReport, output_file = file,
-                        params = params, 
-                        envir = new.env(parent = globalenv()))
-    }
-  )
-
   
 
 
