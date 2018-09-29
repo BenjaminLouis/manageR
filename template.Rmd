@@ -51,8 +51,7 @@ params:
   services:
     value:
       data: NA
-      discount: 0
-      deposit: 0
+      totdata: NA
   bankinfo:
     value:
       holder: "HOLDER"

@@ -546,12 +546,6 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   # -----------------------------------
   observeEvent(input$downloadpdf, {
     ns <- session$ns
-    ids <- input$origTable_rows_selected
-    if (length(ids) == 1) {
-      rv$no <- ids
-    } else if (rv$no > nrow(df())) {
-      rv$no <- 1
-    }
     showModal(
       modalDialog(
         title = "What do you want to print ?",
@@ -570,56 +564,145 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   output$print_option <- renderUI({
     ns <- session$ns
     ids <- rv$no
-      mydf <- df()
-      mylist <- list()
-      mylist[[1]] <- inline(actionButton(inputId = ns("home"), label = NULL, icon = icon("backward", lib = "glyphicon")), m = 3)
-      mylist[[2]] <- inline(actionButton(inputId = ns("left"), label = NULL, icon = icon("chevron-left", lib = "glyphicon")), m = 3)
-      mylist[[3]] <- inline(numericInput(inputId = ns("rowno"), label = NULL, value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
-      mylist[[4]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
-      mylist[[5]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
+    mydf <- df()
+    mylist <- list()
+    mylist[[1]] <- inline(actionButton(inputId = ns("home"), label = NULL, icon = icon("backward", lib = "glyphicon")), m = 3)
+    mylist[[2]] <- inline(actionButton(inputId = ns("left"), label = NULL, icon = icon("chevron-left", lib = "glyphicon")), m = 3)
+    mylist[[3]] <- inline(numericInput(inputId = ns("rowno"), label = NULL, value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
+    mylist[[4]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
+    mylist[[5]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
     if (mode == "quote") {
       iddoc <- pull(mydf[ids,], ID_Quote)
-      mylist[[6]] <- h4(paste("Quote", iddoc))
-      amount <- round(pull(mydf[ids,], Amount), 2)
-      discount <- pull(mydf[ids,], Discount)
-      net <- round(pull(mydf[ids,], Net_payable), 2)
-      theserv <- dfserv() %>%
-        filter(ID_Quote == iddoc) %>%
-        select(Designation, Quantity, Unit, Unit_price) %>%
-        mutate(Unit_price = round(Unit_price, 2)) %>%
-        mutate(Total = round(Quantity * Unit_price, 2))
-      totdat <- tibble(
-        x = c("Amount", "Discout", "Net payable"),
-        y = c(amount, paste(discount, "%"), net)
-      )
+      thedoc <- h4(paste("Quote :", iddoc))
     }
     if (mode == "bill") {
       iddoc <- pull(mydf[ids,], ID_Bill)
-      mylist[[6]] <- h4(paste("Bill", iddoc))
-      amount <- round(pull(mydf[ids,], Amount), 2)
-      discount <- pull(mydf[ids,], Discount)
-      deposit <- round(pull(mydf[ids,], Deposit), 2) 
-      net <- round(pull(mydf[ids,], Net_payable), 2)
-      theserv <- dfserv() %>%
-        filter(ID_Bill == iddoc) %>%
-        select(Designation, Quantity, Unit, Unit_price) %>%
-        mutate(Unit_price = round(Unit_price, 2)) %>%
-        mutate(Total = round(Quantity * Unit_price, 2))
-      totdat <- tibble(
-        x = c("Amount", "Discout", "Deposit", "Net payable"),
-        y = c(amount, paste(discount, "%"), deposit, net)
-      )
+      thedoc <- h4(paste("Bill :", iddoc))
     }
-    mylist[[7]] <- theserv#tableOutput(ns("theserv"))
+    idclient <- pull(mydf[ids,], ID_Client)
+    thename <- pull(filter(clientsdata(), ID_Client == idclient), Name)
+    thefirstname <- pull(filter(clientsdata(), ID_Client == idclient), Firstname)
+    mylist[[6]] <- fluidRow(column(width = 4, thedoc),
+                            column(width = 8, h4(paste("Client :", idclient, "(",thefirstname, thename,")"))))
+    mylist[[7]] <- tableOutput(ns("theserv"))
     mylist[[8]] <- br()
-    mylist[[9]] <- totdat#tableOutput(ns("totdat"))
+    mylist[[9]] <- tableOutput(ns("totdat"))
+    if (mode == "bill") {
+      mylist[[10]] <- textAreaInput(ns("comment"), label = "Comment :")
+    }
     do.call(tagList, mylist)
   })
   
   # Table output
   # ------------
- # output$theserv <- renderTable(theserv())
-  #output$totdat <- renderTable(totdat(), colnames = FALSE)
+  observeEvent(input$downloadpdf, {
+    ids <- input$origTable_rows_selected
+    if (length(ids) == 1) {
+      rv$no <- ids
+    } else {
+      rv$no <- 1
+    }
+    ids <- rv$no
+    mydf <- df()
+    ll <- reactiveValues(info = list(), config = list(), client = list(), services = list())
+    ll$info$nclient <- idclient <- pull(mydf[ids,], ID_Client)
+    ll$client$name <- pull(filter(clientsdata(), ID_Client == idclient), Name)
+    ll$client$firstname <- pull(filter(clientsdata(), ID_Client == idclient), Firstname)
+    ll$client$company <- pull(filter(clientsdata(), ID_Client == idclient), Company)
+    ll$client$department <- pull(filter(clientsdata(), ID_Client == idclient), Department)
+    ll$client$address1 <- pull(filter(clientsdata(), ID_Client == idclient), Address1)
+    ll$client$address2 <- pull(filter(clientsdata(), ID_Client == idclient), Address2)
+    ll$client$postal_code <- pull(filter(clientsdata(), ID_Client == idclient), Postal_code)
+    ll$client$city <- pull(filter(clientsdata(), ID_Client == idclient), City)
+    ll$client$mobile <- pull(filter(clientsdata(), ID_Client == idclient), Office_line)
+    ll$client$e_mail <- pull(filter(clientsdata(), ID_Client == idclient), e_mail)
+    if (mode == "quote") {
+      ll$info$doc <- "Devis"
+      ll$info$ndoc <- iddoc <- pull(mydf[ids,], ID_Quote)
+      amount <- round(pull(mydf[ids,], Amount), 2)
+      discount <- pull(mydf[ids,], Discount)
+      net <- round(pull(mydf[ids,], Net_payable), 2)
+      ll$services$data <- theserv <- dfserv() %>%
+        filter(ID_Quote == iddoc) %>%
+        select(Designation, Quantity, Unit, Unit_price) %>%
+        mutate(Unit_price = round(Unit_price, 2)) %>%
+        mutate(Total = round(Quantity * Unit_price, 2))
+      ll$services$totdata <- totdat <- tibble(
+        x = c("Amount", "Discout", "Net payable"),
+        y = c(amount, paste(discount, "%"), net)
+      )
+    }
+    if (mode == "bill") {
+      idaddress <- pull(mydf, ID_Address)
+      ll$info$nclient <- paste(ll$info$nclient, idaddress, sep = "<br>")
+      ll$info$doc <- "Facture"
+      ll$info$ndoc <- iddoc <- pull(mydf[ids,], ID_Bill) 
+      ll$billing$company <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Company)
+      ll$billing$department <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Department)
+      ll$billing$address1 <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Address1)
+      ll$billing$address2 <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Address2)
+      ll$billing$postal_code <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Postal_code)
+      ll$billing$city <- pull(filter(billingaddressesdata(), ID_Address == idaddress), City)
+      ll$billing$siret <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Register_Siret)
+      ll$comment <- input$comment
+      amount <- round(pull(mydf[ids,], Amount), 2)
+      discount <- pull(mydf[ids,], Discount)
+      deposit <- round(pull(mydf[ids,], Deposit), 2) 
+      net <- round(pull(mydf[ids,], Net_payable), 2)
+      ll$services$data <- theserv <- dfserv() %>%
+        filter(ID_Bill == iddoc) %>%
+        select(Designation, Quantity, Unit, Unit_price) %>%
+        mutate(Unit_price = round(Unit_price, 2)) %>%
+        mutate(Total = round(Quantity * Unit_price, 2))
+      ll$services$totdata <- totdat <- tibble(
+        x = c("Amount", "Discout", "Deposit", "Net payable"),
+        y = c(amount, paste(discount, "%"), deposit, net)
+      )
+    }
+    output$theserv <- renderTable(ll$services$data)
+    output$totdat <- renderTable(ll$services$totdata, colnames = FALSE)
+  })
+  
+
+  output$printpdf <- downloadHandler(
+    filename = function() {
+      paste0(iddoc, ".pdf")
+    },
+    content = function(file) {
+      # Copy the report file to a temporary directory before processing it, in
+      # case we don't have write permissions to the current working dir (which
+      # can happen when deployed).
+      tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
+      tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
+      tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
+      file.copy("devis.Rmd", tempReport, overwrite = TRUE)
+      file.copy("facture.cls", tempClass, overwrite = TRUE)
+      file.copy("name.png", tempImage, overwrite = TRUE)
+      
+      # Set up parameters to pass to Rmd document
+      params <- with(thisclientdevis(),
+                     list(ndoc = devis_id(),
+                          nclient = input$dclient,
+                          firstname = ifelse(!is.na(Prenom), Prenom, ""),
+                          lastname = ifelse(!is.na(Nom), Nom, ""),
+                          addr1 = ifelse(!is.na(Entreprise) | !is.na(Departement), paste0(Entreprise, " ", Departement), ""),
+                          addr2 = ifelse(!is.na(Adresse1), Adresse1, ""),
+                          addr3 = ifelse(!is.na(Adresse2), Adresse2, ""),
+                          addr4 = ifelse(!is.na(Entreprise) | !is.na(Departement), paste0(Code_Postal, " ", Ville), ""),
+                          tel = ifelse(!is.na(Tel_Fixe), Tel_Fixe, ""),
+                          mail = ifelse(!is.na(e_mail), e_mail, ""),
+                          discount = input$discount,
+                          description = desc$devis))
+      # knit the document
+      rmarkdown::render(tempReport, output_file = file,
+                        params = params, 
+                        envir = new.env(parent = globalenv()))
+    }
+  )
+
+  
+
+
   
   ###########################################################
   #################  DISPLAY DATATABLE   ####################
