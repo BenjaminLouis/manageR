@@ -12,7 +12,7 @@
   font-size: 12pt;
   line-height: 0mm;
   @bottom-left {
-    content: "Facture" " n° " "Test-0001";
+    content: "Devis" " n° " "D1809-0001";
   }
   @bottom-right {
     content: "Page " counter(page) "/" counter(pages);
@@ -21,7 +21,7 @@
 
 @page :first {
   @top-right {
-    content: "Facture";
+    content: "Devis";
     text-align: left;
     vertical-align: bottom;
     text-transform: uppercase;

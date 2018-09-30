@@ -3,7 +3,6 @@ lang: fr
 output: 
   weasydoc::hpdf_document_base:
     engine: "weasyprint"
-    keep_html: true
     css: "template_style.css"
     fig_caption: false
 params:

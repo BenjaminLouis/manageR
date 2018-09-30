@@ -616,6 +616,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     ll$client$city <- pull(filter(clientsdata(), ID_Client == idclient), City)
     ll$client$mobile <- pull(filter(clientsdata(), ID_Client == idclient), Office_line)
     ll$client$e_mail <- pull(filter(clientsdata(), ID_Client == idclient), e_mail)
+    ll$info$date <- pull(mydf[ids,], Date)
     if (mode == "quote") {
       ll$info$doc <- "Devis"
       ll$info$ndoc <- iddoc <- pull(mydf[ids,], ID_Quote)
@@ -667,21 +668,23 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         # Copy the report file to a temporary directory before processing it, in
         # case we don't have write permissions to the current working dir (which
         # can happen when deployed).
-        tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
-        tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
-        tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
-        tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
-        tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
-        file.copy("template.Rmd", tempReport, overwrite = TRUE)
-        file.copy("template_style.scss", tempSCSS, overwrite = TRUE)
-        file.copy("name.png", tempImage, overwrite = TRUE)
+        # tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
+        # tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
+        # tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
+        # tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
+        # tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
+        # file.copy("template.Rmd", tempReport, overwrite = TRUE)
+        # file.copy("template_style.scss", tempSCSS, overwrite = TRUE)
+        # file.copy("name.png", tempImage, overwrite = TRUE)
         
         library(sassr)
         #library(backports)
         doc <- ll$info$doc
         ndoc <- ll$info$ndoc
-        write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = tempVar)
-        compile_sass(file = tempSCSS, output = tempCSS)
+        #write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = tempVar)
+        write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = "_variables.scss")
+        #compile_sass(file = tempSCSS, output = tempCSS)
+        compile_sass(file = "template_style.scss", output = "template_style.css")
         
         # Set up parameters to pass to Rmd document
         params <- list(info = ll$info, config = ll$config, client = ll$client, services = ll$services)
@@ -691,9 +694,11 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
         
         # knit the document
-        rmarkdown::render(tempReport, output_file = file,
+        rmarkdown::render("template.Rmd", output_file = file,
                           params = params, #output_format = weasydoc::hpdf_document_base(),
-                          envir = new.env(parent = globalenv()))
+                          envir = new.env(parent = globalenv()),
+                          encoding = "UTF-8"
+                          )
       }
     )
   })
