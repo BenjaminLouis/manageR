@@ -5,6 +5,8 @@ if (!require(shinydashboard)) install.packages('shinydashboard'); library(shinyd
 if (!require(DT)) install.packages('DT'); library(DT)
 if (!require(dplyr)) install.packages('dplyr'); library(dplyr)
 if (!require(lubridate)) install.packages('lubridate'); library(lubridate)
+if (!require(sassr)) install.packages('sassr'); library(sassr)
+#if (!require(backports)) install.packages('backports'); library(backports)
 #if (!require(shinyjs)) install.packages('shinyjs'); library(shinyjs)
 source("utils.R")
 source("editTableDT.R") #Inspired from https://github.com/cardiomoon/editData

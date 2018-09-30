@@ -310,7 +310,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       x1$Date[ids] <- as.character(format(ymd(input$date), "%d-%m-%Y"))
       x1$Amount[ids] <- amount
       x1$Discount[ids] <- input$discount
-      x1$Net_payable <- amount*(1 - (input$discount/100))
+      x1$Net_payable[ids] <- amount*(1 - (input$discount/100))
       x1$Status[ids] <- "In_progress"
       x1$Status_comment[ids] <- ""
       z <- bind_cols(tibble::tibble(ID_Quote = rep(x1$ID_Quote[ids], nrow(rv$datapresta)),
@@ -331,7 +331,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       x1$Amount[ids] <- amount
       x1$Discount[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), Discount)
       x1$Deposit[ids] <- input$deposit
-      x1$Net_payable <- amount*(1 - (x1$Discount[ids]/100)) - input$deposit
+      x1$Net_payable[ids] <- amount*(1 - (x1$Discount[ids]/100)) - input$deposit
       x1$Status[ids] <- "In_progress"
       x1$Payment[ids] <- ""
     }
@@ -534,6 +534,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   observeEvent(input$save, {
     ns <- session$ns
     write_delim(x = df(), path = normalizePath(file.path(path(), filename[1])), delim = input$sep)
+    #write_delim(x = as.data.frame(dfserv()), path = normalizePath(file.path(path(), filename[2])), delim = input$sep)
     write_delim(x = dfserv(), path = normalizePath(file.path(path(), filename[2])), delim = input$sep)
     removeModal()
   })
@@ -546,12 +547,18 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   # -----------------------------------
   observeEvent(input$downloadpdf, {
     ns <- session$ns
+    ids <- input$origTable_rows_selected
+    if (length(ids) == 1) {
+      rv$no <- ids
+    } else {
+      rv$no <- 1
+    }
     showModal(
       modalDialog(
-        title = "What do you want to print ?",
+        title = "Printing options",
         uiOutput(ns("print_option")),
         footer = tagList(
-          downloadButton(outputId = ns("printpdf"), label = "Download"),
+          actionButton(inputId = ns("printpdf"), label = "Download", icon = icon("download-alt", lib = "glyphicon")),
           modalButton("Close", icon = icon("eject", lib = "glyphicon"))
         ),
         easyClose = TRUE,
@@ -566,143 +573,214 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     ids <- rv$no
     mydf <- df()
     mylist <- list()
-    mylist[[1]] <- inline(actionButton(inputId = ns("home"), label = NULL, icon = icon("backward", lib = "glyphicon")), m = 3)
-    mylist[[2]] <- inline(actionButton(inputId = ns("left"), label = NULL, icon = icon("chevron-left", lib = "glyphicon")), m = 3)
-    mylist[[3]] <- inline(numericInput(inputId = ns("rowno"), label = NULL, value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
-    mylist[[4]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
-    mylist[[5]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
+    mylist[[1]] <- h4("Document to print")
+    mylist[[2]] <- inline(actionButton(inputId = ns("home"), label = NULL, icon = icon("backward", lib = "glyphicon")), m = 3)
+    mylist[[3]] <- inline(actionButton(inputId = ns("left"), label = NULL, icon = icon("chevron-left", lib = "glyphicon")), m = 3)
+    mylist[[4]] <- inline(numericInput(inputId = ns("rowno"), label = NULL, value = rv$no, min = 1, max = nrow(mydf), step = 1, width = 50 + 10 * log10(nrow(mydf))), m = 3)
+    mylist[[5]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
+    mylist[[6]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
     if (mode == "quote") {
       iddoc <- pull(mydf[ids,], ID_Quote)
-      thedoc <- h4(paste("Quote :", iddoc))
+      thedoc <- h5(paste("Quote :", iddoc))
     }
     if (mode == "bill") {
       iddoc <- pull(mydf[ids,], ID_Bill)
-      thedoc <- h4(paste("Bill :", iddoc))
+      thedoc <- h5(paste("Bill :", iddoc))
     }
     idclient <- pull(mydf[ids,], ID_Client)
     thename <- pull(filter(clientsdata(), ID_Client == idclient), Name)
     thefirstname <- pull(filter(clientsdata(), ID_Client == idclient), Firstname)
-    mylist[[6]] <- fluidRow(column(width = 4, thedoc),
-                            column(width = 8, h4(paste("Client :", idclient, "(",thefirstname, thename,")"))))
-    mylist[[7]] <- tableOutput(ns("theserv"))
-    mylist[[8]] <- br()
-    mylist[[9]] <- tableOutput(ns("totdat"))
+    mylist[[7]] <- fluidRow(column(width = 4, thedoc),
+                            column(width = 8, h5(paste("Client :", idclient, "(",thefirstname, thename,")"))))
+    mylist[[8]] <- tableOutput(ns("theserv"))
+    mylist[[9]] <- br()
+    mylist[[10]] <- tableOutput(ns("totdat"))
     if (mode == "bill") {
-      mylist[[10]] <- textAreaInput(ns("comment"), label = "Comment :")
+      mylist[[11]] <- textAreaInput(ns("comment"), label = "Comment :")
     }
+    addno <- length(mylist)
+    mylist[[addno + 1]] <- h4("Output options")
+    mylist[[addno + 2]] <- h5("Name of output file")
+    mylist[[addno + 3]] <- textInput(inputId = ns("output_name"), label = NULL, value = iddoc)
+    mylist[[addno + 4]] <- h5("Directory of output file")
+    mylist[[addno + 5]] <- fluidRow(
+      column(width = 8, verbatimTextOutput(ns("pathoutput"), placeholder = TRUE)),
+      column(width = 4, shinyDirButton(id = ns("diroutput"), label = "Browse...", title = "Directory of output file", buttonType = "primary")))
     do.call(tagList, mylist)
   })
   
   # Table output
   # ------------
-  observeEvent(input$downloadpdf, {
-    ids <- input$origTable_rows_selected
-    if (length(ids) == 1) {
-      rv$no <- ids
-    } else {
-      rv$no <- 1
-    }
+  observeEvent(rv$no, {#input$downloadpdf, {
+    ns <- session$ns
     ids <- rv$no
     mydf <- df()
-    ll <- reactiveValues(info = list(), config = list(), client = list(), services = list())
-    ll$info$nclient <- idclient <- pull(mydf[ids,], ID_Client)
-    ll$client$name <- pull(filter(clientsdata(), ID_Client == idclient), Name)
-    ll$client$firstname <- pull(filter(clientsdata(), ID_Client == idclient), Firstname)
-    ll$client$company <- pull(filter(clientsdata(), ID_Client == idclient), Company)
-    ll$client$department <- pull(filter(clientsdata(), ID_Client == idclient), Department)
-    ll$client$address1 <- pull(filter(clientsdata(), ID_Client == idclient), Address1)
-    ll$client$address2 <- pull(filter(clientsdata(), ID_Client == idclient), Address2)
-    ll$client$postal_code <- pull(filter(clientsdata(), ID_Client == idclient), Postal_code)
-    ll$client$city <- pull(filter(clientsdata(), ID_Client == idclient), City)
-    ll$client$mobile <- pull(filter(clientsdata(), ID_Client == idclient), Office_line)
-    ll$client$e_mail <- pull(filter(clientsdata(), ID_Client == idclient), e_mail)
-    ll$info$date <- pull(mydf[ids,], Date)
+    servdf <- dfserv()
+    idclient <- reactive(pull(mydf[ids,], ID_Client))
     if (mode == "quote") {
-      ll$info$doc <- "Devis"
-      ll$info$ndoc <- iddoc <- pull(mydf[ids,], ID_Quote)
-      amount <- round(pull(mydf[ids,], Amount), 2)
-      discount <- pull(mydf[ids,], Discount)
-      net <- round(pull(mydf[ids,], Net_payable), 2)
-      ll$services$data <- theserv <- dfserv() %>%
-        filter(ID_Quote == iddoc) %>%
+      iddoc <- reactive(pull(mydf[ids,], ID_Quote))
+      amount <- reactive(round(pull(mydf[ids,], Amount), 2))
+      discount <- reactive(pull(mydf[ids,], Discount))
+      net <- reactive(round(pull(mydf[ids,], Net_payable), 2))
+      theserv <- reactive({
+        servdf %>%
+        filter(ID_Quote == iddoc()) %>%
         select(Designation, Quantity, Unit, Unit_price) %>%
         mutate(Unit_price = round(Unit_price, 2)) %>%
         mutate(Total = round(Quantity * Unit_price, 2))
-      ll$services$totdata <- totdat <- tibble(
-        x = c("Amount", "Discout", "Net payable"),
-        y = c(amount, paste(discount, "%"), net)
+      })
+      totdat <- reactive({
+        tibble(
+        x = c("Amount", "Discount", "Net payable"),
+        y = c(amount(), paste(discount(), "%"), net())
       )
+      })
+    }
+    if (mode == "bill") {
+      idaddress <- reactive(pull(mydf, ID_Address))
+      iddoc <- reactive(pull(mydf[ids,], ID_Bill))
+      amount <- reactive(round(pull(mydf[ids,], Amount), 2))
+      discount <- reactive(pull(mydf[ids,], Discount))
+      deposit <- reactive(round(pull(mydf[ids,], Deposit), 2))
+      net <- reactive(round(pull(mydf[ids,], Net_payable), 2))
+      theserv <- reactive({
+        servdf %>%
+        filter(ID_Bill == iddoc()) %>%
+        select(Designation, Quantity, Unit, Unit_price) %>%
+        mutate(Unit_price = round(Unit_price, 2)) %>%
+        mutate(Total = round(Quantity * Unit_price, 2))
+      })
+      totdat <- reactive({
+        tibble(
+        x = c("Amount", "Discount", "Deposit", "Net payable"),
+        y = c(amount(), paste(discount(), "%"), deposit(), net())
+      )
+      })
+    }
+    output$theserv <- renderTable(theserv())
+    output$totdat <- renderTable(totdat(), colnames = FALSE)
+  })
+  
+  # Directory choice
+  # ----------------
+  volumes <- getVolumes()
+  shinyDirChoose(input, "diroutput", roots = volumes, session = session)
+  filepath <- reactive({
+    req(input$diroutput)
+    parseDirPath(volumes, input$diroutput)
+  })
+  output$pathoutput <- renderText({
+    req(filepath())
+    filepath()
+  })
+  
+  # Download button
+  # ---------------
+  observeEvent(input$printpdf, {
+    ns <- session$ns
+    ids <- rv$no
+    mydf <- df()
+    
+    # Copy the report file to a temporary directory before processing it, in
+    # case we don't have write permissions to the current working dir (which
+    # can happen when deployed).
+    tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
+    tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
+    tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
+    tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
+    tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
+    file.copy("template.Rmd", tempReport, overwrite = TRUE)
+    file.copy("template_style.scss", tempSCSS, overwrite = TRUE)
+    file.copy("name.png", tempImage, overwrite = TRUE)
+    
+    # SCSS compilation
+    if (mode == "quote") {
+      doc <- "Devis"
+      ndoc <- pull(mydf[ids,], ID_Quote)
+    }
+    if (mode == "bill") {
+      doc <- "Facture"
+      ndoc <- pull(mydf[ids,], ID_Bill)
+    }
+    write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = tempVar)
+    compile_sass(file = tempSCSS, output = tempCSS)
+    
+    # Set up parameters to pass to Rmd document
+    params <- list(info = list(), config = list(), client = list(), services = list())
+    params$info$date <- pull(mydf[ids,], Date)
+    params$info$doc <- doc
+    params$info$ndoc <- ndoc
+    params$info$nclient <- idclient <- pull(mydf[ids,], ID_Client)
+    params$client$name <- pull(filter(clientsdata(), ID_Client == idclient), Name)
+    params$client$firstname <- pull(filter(clientsdata(), ID_Client == idclient), Firstname)
+    params$client$company <- pull(filter(clientsdata(), ID_Client == idclient), Company)
+    params$client$department <- pull(filter(clientsdata(), ID_Client == idclient), Department)
+    params$client$address1 <- pull(filter(clientsdata(), ID_Client == idclient), Address1)
+    params$client$address2 <- pull(filter(clientsdata(), ID_Client == idclient), Address2)
+    params$client$postal_code <- pull(filter(clientsdata(), ID_Client == idclient), Postal_code)
+    params$client$city <- pull(filter(clientsdata(), ID_Client == idclient), City)
+    params$client$mobile <- pull(filter(clientsdata(), ID_Client == idclient), Office_line)
+    params$client$e_mail <- pull(filter(clientsdata(), ID_Client == idclient), e_mail)
+    if (mode == "quote") {
+      amount <- round(pull(mydf[ids,], Amount), 2)
+      discount <- pull(mydf[ids,], Discount)
+      net <- round(pull(mydf[ids,], Net_payable), 2)
+      params$services$data <- dfserv() %>%
+          filter(ID_Quote == ndoc) %>%
+          select(Designation, Quantity, Unit, Unit_price) %>%
+          mutate(Unit_price = round(Unit_price, 2)) %>%
+          mutate(Total = round(Quantity * Unit_price, 2))
+      params$services$totdata <- tibble(
+          x = c("Amount", "Discount", "Net payable"),
+          y = c(amount, paste(discount, "%"), net)
+        )
     }
     if (mode == "bill") {
       idaddress <- pull(mydf, ID_Address)
-      ll$info$nclient <- paste(ll$info$nclient, idaddress, sep = "<br>")
-      ll$info$doc <- "Facture"
-      ll$info$ndoc <- iddoc <- pull(mydf[ids,], ID_Bill) 
-      ll$billing$company <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Company)
-      ll$billing$department <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Department)
-      ll$billing$address1 <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Address1)
-      ll$billing$address2 <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Address2)
-      ll$billing$postal_code <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Postal_code)
-      ll$billing$city <- pull(filter(billingaddressesdata(), ID_Address == idaddress), City)
-      ll$billing$siret <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Register_Siret)
-      ll$comment <- input$comment
+      params$info$nclient <- paste(params$info$nclient, idaddress, sep = "<br>")
+      params$info$doc <- "Facture"
+      params$billing$company <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Company)
+      params$billing$department <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Department)
+      params$billing$address1 <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Address1)
+      params$billing$address2 <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Address2)
+      params$billing$postal_code <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Postal_code)
+      params$billing$city <- pull(filter(billingaddressesdata(), ID_Address == idaddress), City)
+      params$billing$siret <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Register_Siret)
+      params$comment <- input$comment
       amount <- round(pull(mydf[ids,], Amount), 2)
       discount <- pull(mydf[ids,], Discount)
-      deposit <- round(pull(mydf[ids,], Deposit), 2) 
+      deposit <- round(pull(mydf[ids,], Deposit), 2)
       net <- round(pull(mydf[ids,], Net_payable), 2)
-      ll$services$data <- theserv <- dfserv() %>%
-        filter(ID_Bill == iddoc) %>%
-        select(Designation, Quantity, Unit, Unit_price) %>%
-        mutate(Unit_price = round(Unit_price, 2)) %>%
-        mutate(Total = round(Quantity * Unit_price, 2))
-      ll$services$totdata <- totdat <- tibble(
-        x = c("Amount", "Discout", "Deposit", "Net payable"),
-        y = c(amount, paste(discount, "%"), deposit, net)
-      )
+      params$services$data <- dfserv() %>%
+          filter(ID_Bill == ndoc) %>%
+          select(Designation, Quantity, Unit, Unit_price) %>%
+          mutate(Unit_price = round(Unit_price, 2)) %>%
+          mutate(Total = round(Quantity * Unit_price, 2))
+      params$services$totdata <- tibble(
+          x = c("Amount", "Discount", "Deposit", "Net payable"),
+          y = c(amount, paste(discount, "%"), deposit, net)
+        )
     }
-    output$theserv <- renderTable(ll$services$data)
-    output$totdat <- renderTable(ll$services$totdata, colnames = FALSE)
-    output$printpdf <- downloadHandler(
-      filename = paste0(ll$info$ndoc, ".html"),
-      content = function(file) {
-        # Copy the report file to a temporary directory before processing it, in
-        # case we don't have write permissions to the current working dir (which
-        # can happen when deployed).
-        # tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
-        # tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
-        # tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
-        # tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
-        # tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
-        # file.copy("template.Rmd", tempReport, overwrite = TRUE)
-        # file.copy("template_style.scss", tempSCSS, overwrite = TRUE)
-        # file.copy("name.png", tempImage, overwrite = TRUE)
-        
-        library(sassr)
-        #library(backports)
-        doc <- ll$info$doc
-        ndoc <- ll$info$ndoc
-        #write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = tempVar)
-        write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = "_variables.scss")
-        #compile_sass(file = tempSCSS, output = tempCSS)
-        compile_sass(file = "template_style.scss", output = "template_style.css")
-        
-        # Set up parameters to pass to Rmd document
-        params <- list(info = ll$info, config = ll$config, client = ll$client, services = ll$services)
-        params$config <- list(name = "Company name<br/> Services", address1 = "1 rue fictive", address2 = "test", postal_code = "01000",
-                              city = "Testcity", mobile = "+33(0)6 00 00 00 00", e_mail = "contact@email.com", web = "www.siteweb.com", 
-                              siret = "xxxxxxxxxxxxxxxxxx")
-        params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
-        
-        # knit the document
-        rmarkdown::render("template.Rmd", output_file = file,
-                          params = params, #output_format = weasydoc::hpdf_document_base(),
-                          envir = new.env(parent = globalenv()),
-                          encoding = "UTF-8"
-                          )
-      }
-    )
+    params$config <- list(name = "Company name<br/> Services", address1 = "1 rue fictive", address2 = "test", postal_code = "01000",
+                          city = "Testcity", mobile = "+33(0)6 00 00 00 00", e_mail = "contact@email.com", web = "www.siteweb.com", 
+                          siret = "xxxxxxxxxxxxxxxxxx")
+    params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
+    
+    # knit the document
+    rmarkdown::render(tempReport, #output_file = input$output_name,
+                      params = params, #output_format = weasydoc::hpdf_document_base(),
+                      envir = new.env(parent = globalenv()),
+                      encoding = "UTF-8")
+    
+    # Close modal dialog
+    removeModal()
+    
+    # Copy the document to the final directory
+    tempOutput <- normalizePath(file.path(tempdir(), "template.pdf"), mustWork = FALSE)
+    finalOutput <- normalizePath(file.path(filepath(), paste0(input$output_name, ".pdf")), mustWork = FALSE)
+    file.copy(tempOutput, finalOutput, overwrite = TRUE)
+    
   })
-  
 
 
   

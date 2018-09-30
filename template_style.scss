@@ -214,18 +214,40 @@ footer {
         }
       }
     }
+    & tbody {
+      font-size: 11pt;
+    }
+    & td {
+      border-left: 1px solid black;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      padding-left: 10px;
+      padding-right: 10px;
+      &:last-child {
+        border-right: 1px solid black;
+      }
+    }
   }
-  & tbody {
-    font-size: 11pt;
-  }
-  & td {
-    border-left: 1px solid black;
-    padding-top: 7px;
-    padding-bottom: 7px;
-    padding-left: 10px;
-    padding-right: 10px;
-    &:last-child {
-      border-right: 1px solid black;
+}
+
+.total {
+  margin-top: 5mm;
+  & > table {
+    page-break-inside: avoid;
+    margin-right: 0px;
+    margin-left: auto;
+    width: 34%;
+    border: 1px solid black;
+    border-collapse: collapse;
+    & tbody {
+      font-size: 11pt;
+    }
+    & td {
+      border-left: 1px solid black;
+      padding-top: 7px;
+      padding-bottom: 7px;
+      padding-left: 10px;
+      padding-right: 10px;
     }
   }
 }
@@ -252,4 +274,9 @@ footer {
 
 #footquote {
   width: 90%;
+}
+
+.foottable {
+  font-size: 9pt;
+  text-align: right;
 }

@@ -12,7 +12,7 @@
   font-size: 12pt;
   line-height: 0mm;
   @bottom-left {
-    content: "Devis" " n° " "D1809-0001";
+    content: "Facture" " n° " "Test-0001";
   }
   @bottom-right {
     content: "Page " counter(page) "/" counter(pages);
@@ -21,7 +21,7 @@
 
 @page :first {
   @top-right {
-    content: "Devis";
+    content: "Facture";
     text-align: left;
     vertical-align: bottom;
     text-transform: uppercase;
@@ -305,11 +305,11 @@ footer {
   border-right: 1px solid black;
 }
 
-.services tbody {
+.services > table tbody {
   font-size: 11pt;
 }
 
-.services td {
+.services > table td {
   border-left: 1px solid black;
   padding-top: 7px;
   padding-bottom: 7px;
@@ -317,8 +317,33 @@ footer {
   padding-right: 10px;
 }
 
-.services td:last-child {
+.services > table td:last-child {
   border-right: 1px solid black;
+}
+
+.total {
+  margin-top: 5mm;
+}
+
+.total > table {
+  page-break-inside: avoid;
+  margin-right: 0px;
+  margin-left: auto;
+  width: 34%;
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+.total > table tbody {
+  font-size: 11pt;
+}
+
+.total > table td {
+  border-left: 1px solid black;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  padding-left: 10px;
+  padding-right: 10px;
 }
 
 .footbox {
@@ -344,5 +369,10 @@ footer {
 
 #footquote {
   width: 90%;
+}
+
+.foottable {
+  font-size: 9pt;
+  text-align: right;
 }
 

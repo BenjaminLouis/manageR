@@ -60,6 +60,7 @@ params:
 ---
 
 ```{r setup, include=FALSE}
+options(knitr.kable.NA = '')
 library(htmltools)
 library(glue)
 library(dplyr)
@@ -86,6 +87,11 @@ concatenate <- function(...) {
   st <- gsub("(^\\s+)|(\\s+$)", "", st)
   st <- gsub("^$", NA, st)
   return(st)
+}
+parse_amount <- function(x) {
+  x <- format(x, nsmall = 2)
+  x <- gsub("\\.", ",", x)
+  x <- paste(x, "€")
 }
 ```
 
@@ -233,12 +239,14 @@ HTML(box)
 <div class = "row topm">
 
 ```{r echo = FALSE}
-if (!(params$comment %in% c("NA", "")) & !is.na(params$comment)) {
-  comment <- paste("<p class = \"bold\">Commentaire : </p><p>", params$comment,"</p>")
-} else {
-  comment <- "<p></p>"
+if (tolower(params$info$doc) %in% c("invoice", "facture")) {
+  if (!(params$comment %in% c("NA", "")) & !is.na(params$comment)) {
+    comment <- paste("<p class = \"bold\">Commentaire : </p><p>", params$comment,"</p>")
+  } else {
+    comment <- "<p></p>"
+  }
+  HTML(comment)
 }
-HTML(comment)
 ```
 
 </div>
@@ -246,30 +254,53 @@ HTML(comment)
 <div class = "row services">
 
 ```{r echo = FALSE}
-data <- tibble('Désignation' = character(),
-                   'Quantité' = double(),
-                   'Unité' = character(),
-                   'Prix unitaire' = double(),
-                   'Total' = double())
-#if (!(params$services$data %in% c("NA", "")) & !is.na(params$services$data)) {
-  #temp <- params$services$data
-  temp <- tibble('Désignation' = c("Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris.", "Et prima post Osdroenam quam, ut dictum est, ab hac descriptione discrevimus, Commagena, nunc Euphratensis, clementer adsurgit, Hierapoli, vetere Nino et Samosata civitatibus amplis inlustris."),
-                   'Quantité' = c(1:8),
-                   'Unité' = c("Jour", "Jour","Jour", "Jour","Jour", "Jour","Jour", "Jour"),
-                   'Prix unitaire' = c(1:8),
-                   'Total' = c(1:8))
+data <- tibble('Désignation' = NA,#character(),
+                   'Quantité' = NA,#double(),
+                   'Unité' = NA,#character(),
+                   'Prix unitaire' = NA,#double(),
+                   'Total' = NA)#double())
+if (any(!(params$services$data %in% c("NA", ""))) & any(!is.na(params$services$data))) {
+  temp <- params$services$data
   colnames(temp) <- colnames(data)
   data <- bind_rows(data, temp)
-#}
+  data <- data[-1,]
+}
 data %>%
+  mutate_at(vars(matches('Prix unitaire')), parse_amount) %>%
+  mutate('Total' = parse_amount(Total)) %>%
   kable(format = "html") %>%
-  column_spec(column = 1, width = "45%", extra_css = "text-align:justify;") %>%
+  column_spec(column = 1, width = "42%", extra_css = "text-align:justify;") %>%
   column_spec(column = 2, width = "13%", extra_css = "text-align:right;") %>%
   column_spec(column = 3, width = "11%", extra_css = "text-align:right;") %>%
   column_spec(column = 4, width = "18%", extra_css = "text-align:right;") %>%
-  column_spec(column = 5, width = "13%", extra_css = "text-align:right;") %>%
+  column_spec(column = 5, width = "16%", extra_css = "text-align:right;") %>%
   HTML()
 ```
+
+</div>
+
+<div class = "row total">
+
+```{r echo = FALSE}
+totdata <- tibble(
+          x = c("Amount", "Discount", "Deposit", "Net payable"),
+          y = c(0, paste(0, "%"), 0, 0)
+        )
+if (any(!(params$services$totdata %in% c("NA", ""))) & any(!is.na(params$services$totdata))) {
+  totdata <- params$services$totdata
+}
+totdata[totdata$x != "Discount", 2] <- parse_amount(as.numeric(unlist(totdata[totdata$x != "Discount", 2]))) # ugly!
+totdata %>%
+  kable(format = "html") %>%
+  column_spec(column = 1, width = "53%", extra_css = "text-align:right; font-weight:bold;") %>%
+  column_spec(column = 2, width = "47%", extra_css = "text-align:right;") %>%
+  remove_header() %>%
+  HTML()
+```
+
+:::{.foottable}
+TVA non applicable, article 293B du CGI
+:::
 
 </div>
 
