@@ -1,0 +1,11 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^devstuff_history\.R$
+^LICENSE\.md$
+^CODE_OF_CONDUCT\.md$
+^\.travis\.yml$
+^devstuffs_history\.R$
+^Files$
+^my_docs$
+^othersR$
+^others$

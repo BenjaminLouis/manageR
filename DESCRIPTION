@@ -1,0 +1,26 @@
+Package: manageR
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: person("First", "Last", , "first.last@example.com", c("aut", "cre"))
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Imports: 
+    dplyr,
+    DT,
+    lubridate,
+    magrittr,
+    readr,
+    rmarkdown,
+    sassr,
+    shiny,
+    shinydashboard,
+    shinyFiles,
+    shinyjs,
+    tibble
+Suggests: 
+    knitr
+ByteCompile: true
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1
