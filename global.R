@@ -17,24 +17,26 @@ wdLoadUI <- function(id) {
   ns <- NS(id)
   
   tagList(
-    shinyDirButton(id = ns("dir"), label = "Browse...", title = "Choose a working directory", buttonType = "primary"),     
-    verbatimTextOutput(ns("path"), placeholder = TRUE)
+    fluidRow(
+      column(width = 8, verbatimTextOutput(ns("path"), placeholder = TRUE)),
+      column(width = 4, shinyDirButton(id = ns("dir"), label = "Browse...", title = "Directory of output file", buttonType = "primary"))
+    )
   )
 }
 
 wdLoad <- function(input, output, session) {
-  shinyDirChoose(input, "dir", roots = c(wd = getwd())) 
-  #volumes <- getVolumes()
-  #shinyDirChoose(input, "dir", roots = c(wd = '.', volumes), defaultRoot = 'wd') #getVolumes()) <-- doesn't work
+  #shinyDirChoose(input, "dir", roots = c(wd = getwd())) 
+  volumes <- getVolumes()
+  shinyDirChoose(input, "dir", roots = volumes, session = session) #getVolumes()) <-- doesn't work
   output$path <- renderText({
     req(input$dir)
-    parseDirPath(c(wd = getwd()), input$dir)
-   # parseDirPath(c(wd = '.'), input$dir)
+    #parseDirPath(c(wd = getwd()), input$dir)
+    parseDirPath(volumes, input$dir)
   })
   reactive({
     req(input$dir)
-    parseDirPath(c(wd = getwd()), input$dir)
-    #parseDirPath(c(wd = '.'), input$dir)
+    #parseDirPath(c(wd = getwd()), input$dir)
+    parseDirPath(volumes, input$dir)
   })
 }
 
