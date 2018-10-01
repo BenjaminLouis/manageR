@@ -1,0 +1,6 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^devstuff_history\.R$
+^LICENSE\.md$
+^CODE_OF_CONDUCT\.md$
+^\.travis\.yml$
