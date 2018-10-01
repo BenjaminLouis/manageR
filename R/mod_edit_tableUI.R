@@ -1,4 +1,40 @@
-editableDTUI <- function(id) {
+#' @title mod_edit_tableUI and mod_edit_table
+#' @description A shiny module to edit (add, edit, remove rows) a dataframe and 
+#' export the result. 
+#' It is strongly inspired from \url{https://github.com/cardiomoon/editData}
+#'
+#' @param id shiny id
+#'
+#' @importFrom DT dataTableOutput
+#' @importFrom shiny NS fluidPage fluidRow actionButton icon radioButtons br
+#'
+#' @export
+#'
+#' @examples
+#' library(shiny)
+#' library(DT)
+#' library(readr)
+#' library(tibble)
+#' if (interactive()) {
+#' ui <- fluidPage(
+#'   textInput("mydata","Enter data name",value="mtcars"),
+#'   mod_edit_tableUI("loadfile"),
+#'   h4("Choose a path"),
+#'   textInput("path", value = getwd(), label = NULL),
+#'   h4("Choose a filename (do not forget the extension)"),
+#'   textInput("filename", value = "", label = NULL)
+#' )
+#' 
+#' server <- function(input, output, session) {
+#'   data <- reactive(data(input$mydata))
+#'   editdata <- callModule(mod_loading_options,"loadfile", data = data, 
+#'   path = reactive(input$path), filename = input$filename)
+#' }
+#' 
+#' shinyApp(ui, server)
+#' }
+#' 
+mod_edit_tableUI <- function(id) {
   ns <- NS(id)
   fluidPage(
     fluidRow(
@@ -9,12 +45,29 @@ editableDTUI <- function(id) {
       inline(actionButton(ns("savedata"), label = "Save change", icon = icon("save", lib = "glyphicon")), va = "middle")
     ),
     br(),
-    DT::dataTableOutput(ns("origTable"))
+    dataTableOutput(ns("origTable"))
   )
 }
 
 
-editableDT <- function(input, output, session, data = reactive(NULL), width = 250, path, filename) {
+#' mod_edit_table server function
+#'
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#' @param data reactive dataframe value
+#' @param width width of the Input
+#' @param path reactive string value. The path to the directory where the file will be exported
+#' @param filename string value. The name of the file when exported
+#'
+#' @importFrom DT renderDataTable datatable
+#' @importFrom readr write_delim
+#' @importFrom shiny reactiveValues reactive observeEvent showModal modalDialog modalButton uiOutput tagList actionButton icon renderUI numericInput hr selectInput dateInput checkboxInput textInput h4 updateNumericInput updateSelectInput updateDateInput updateCheckboxInput updateTextInput radioButtons removeModal
+#' @importFrom tibble add_row
+#' 
+#' @export
+#' @rdname mod_edit_tableUI
+mod_edit_table <- function(input, output, session, data = reactive(NULL), width = 250, path, filename) {
   
   rv <- reactiveValues(no = 1, update = 0)#, newdf = newdf)
   newdf <- NA # pour éviter un erreur avec l'utilisation de '<<-' qui est nécessaire
@@ -54,7 +107,7 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
   # --------------
   observeEvent(input$addRow, {
     x <- as.data.frame(df())
-    x1 <- tibble::add_row(x)
+    x1 <- add_row(x)
     newname <- max(as.numeric(rownames(x)), nrow(x), na.rm = TRUE) + 1
     rownames(x1) <- c(rownames(x), newname)
     rv$no <- nrow(x1)
@@ -171,7 +224,7 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
   # ----------
   observeEvent(input$new, {
     x <- as.data.frame(df())
-    x1 <- tibble::add_row(x)
+    x1 <- add_row(x)
     newname <- max(as.numeric(rownames(x)), nrow(x), na.rm = TRUE) + 1
     rownames(x1) <- c(rownames(x), newname)
     rv$no <- nrow(x1)
@@ -288,7 +341,7 @@ editableDT <- function(input, output, session, data = reactive(NULL), width = 25
   
   # Display Datatable
   # -----------------
-  output$origTable <- DT::renderDataTable({
+  output$origTable <- renderDataTable({
     datatable(df(), selection = input$selection, caption = NULL)
   })
   #print(df)
