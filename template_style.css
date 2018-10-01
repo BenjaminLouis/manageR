@@ -204,7 +204,7 @@ footer {
 }
 
 .boxheader > p {
-  line-height: 0mm;
+  /*line-height: 0mm;*/
   font-size: 10pt;
   text-align: center;
   font-weight: bold;

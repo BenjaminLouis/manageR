@@ -5,6 +5,7 @@ output:
     engine: "weasyprint"
     css: "template_style.css"
     fig_caption: false
+    keep_html: true
 params:
   info:
     value:
@@ -68,6 +69,7 @@ library(tidyr)
 library(knitr)
 library(kableExtra)
 library(fontawesome)
+library(stringr)
 tagList(rmarkdown::html_dependency_font_awesome())
 if (Sys.info()["sysname"] == "Linux") {
   insert_fa <- function(x) { glue("<i class=\"fa fa-{x}\"></i>") }
@@ -156,27 +158,20 @@ lconfig
 <div class = "row">
 
 :::{.boxheader}
-Date
-
-***
-
-`r ifelse(params$info$date == "NA", I(format(Sys.Date(), "%d/%m/%Y")), I(params$info$date))`
+`r HTML(paste0("<p>Date</p>", "<hr><p>", ifelse(params$info$date == "NA", format(Sys.Date(), "%d/%m/%Y"), params$info$date), "</p>"))`
 :::
 
 :::{.boxheader}
-`r I(paste0("N° " , params$info$doc))`
-
-***
-
-`r I(params$info$ndoc)`
+`r HTML(paste0("<p>N° " , params$info$doc, "</p><hr><p>", params$info$ndoc, "</p>"))`
 :::
 
 :::{.boxheader}
-N° Client
 
-***
-
-`r I(params$info$nclient)`
+```{r echo = FALSE} 
+nclient <- unlist(str_split(params$info$nclient, pattern = "\n"))
+nclient <- paste0("<p>", nclient, "</p>", collapse = "")
+HTML(paste0("<p>N° Client", "<hr>", nclient))
+```
 :::
 
 </div>

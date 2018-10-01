@@ -736,8 +736,8 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
         )
     }
     if (mode == "bill") {
-      idaddress <- pull(mydf, ID_Address)
-      params$info$nclient <- paste(params$info$nclient, idaddress, sep = "<br>")
+      idaddress <- pull(mydf[ids,], ID_Address)
+      params$info$nclient <- paste(params$info$nclient, idaddress, sep = "\n")
       params$info$doc <- "Facture"
       params$billing$company <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Company)
       params$billing$department <- pull(filter(billingaddressesdata(), ID_Address == idaddress), Department)
