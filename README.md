@@ -59,4 +59,4 @@ Quotes and invoices are printed in `PDF` from a [R Markdown](https://rmarkdown.r
 
 * [{weasydoc}](https://github.com/RLesur/weasydoc) from [@RLesur](https://github.com/RLesur) : a package using *CSS for Paged Media* converters ([WeasyPrint](https://weasyprint.org/), [Prince](https://www.princexml.com/)) to convert [R Markdown](https://rmarkdown.rstudio.com/) using *CSS fo Paged Media* to `PDF`
 
-Thanks to [@RLesur](https://github.com/RLesur) for the inspiring and helping discussions !
+Thanks to Romain Lesur ([@RLesur](https://github.com/RLesur)) for the inspiring and helping discussions !
