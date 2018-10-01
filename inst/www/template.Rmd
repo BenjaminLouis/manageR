@@ -5,7 +5,7 @@ output:
     engine: "weasyprint"
     css: "template_style.css"
     fig_caption: false
-    keep_html: true
+    keep_html: false
 params:
   info:
     value:
@@ -116,7 +116,7 @@ parse_amount <- function(x) {
 <div class = "row">
 
 <div class = "col-5">
-![logo](name.png){width=35mm}
+![logo](logo.png){width=35mm}
 
 :::{.big}
 `r if(!params$config$name %in% c("NA", "") & !is.na(params$config$name)) params$config$name`

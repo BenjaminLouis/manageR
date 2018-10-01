@@ -54,10 +54,10 @@ ui <- dashboardPage(
       
       # Budget tab
       #-----------
-      tabItem(
-        tabName = "budget",
-        h4("Budget management")
-      ),
+      # tabItem(
+      #   tabName = "budget",
+      #   h4("Budget management")
+      # ),
       
       # Clients tab
       #------------
@@ -77,10 +77,10 @@ ui <- dashboardPage(
       
       # Missions tab
       #-------------
-      tabItem(
-        tabName = "missions",
-        h4("Missions information")
-      )
+      # tabItem(
+      #   tabName = "missions",
+      #   h4("Missions information")
+      # )
     )
   )
 )
