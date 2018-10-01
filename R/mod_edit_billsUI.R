@@ -1,20 +1,62 @@
-editBillsUI <- function(id, mode = "bill") {
+#' @title mod_edit_billsUI and mod_edit_bills
+#' @description A shiny module to manage quote and bill data. This shiny module is 
+#' quiet big and in the future it should be divided in smaller module
+#'
+#' @param id shiny id
+#' @param docmode either \code{"quote"} to mange quote document or \code{"bill"} (default) to manage bill document
+#'
+#' @importFrom shiny NS actionButton icon br
+#' @importFrom DT dataTableOutput
+#' 
+#' @export
+#'
+#' @examples
+#' ## No example yet
+mod_edit_billsUI <- function(id, docmode = "bill") {
   ns <- NS(id)
   fluidPage(
     fluidRow(
-      inline(actionButton(ns("add"), paste("New", mode), icon = icon("plus", lib = "glyphicon")), va = "middle"),
-      inline(actionButton(ns("delRow"), paste("Delete", mode), icon = icon("remove", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("add"), paste("New", docmode), icon = icon("plus", lib = "glyphicon")), va = "middle"),
+      inline(actionButton(ns("delRow"), paste("Delete", docmode), icon = icon("remove", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("edit"), "Edit status", icon = icon("wrench", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("savedata"), label = "Save change", icon = icon("floppy-save", lib = "glyphicon")), va = "middle"),
       inline(actionButton(ns("downloadpdf"), label = "Download PDF", icon = icon("download-alt", lib = "glyphicon")), va = "middle")
     ),
     br(),
-    DT::dataTableOutput(ns("origTable"))
+    dataTableOutput(ns("origTable"))
   )
 }
 
 
-editBills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), quotesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill") {
+#' mod_edit_bills server function
+#'
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#' @param data reactive data with bill or quote information
+#' @param servicesdata reactive data withe services information
+#' @param clientsdata reactive data withe clients information
+#' @param quotesdata only if \code{mode = "bill"}. Reactive data with quotes information
+#' @param billingaddressesdata reactive data withe billind addresses information
+#' @param path reactive string value. The path to the directory where the file will be exported
+#' @param filename string value. The name of the file when exported
+#' @param mode either \code{"quote"} to mange quote document or \code{"bill"} (default) to manage bill document
+#'
+#' @importFrom shiny reactiveValues reactive observeEvent showModal modalDialog modalButton uiOutput tagList actionButton icon renderUI numericInput hr selectInput dateInput checkboxInput textInput h4 updateNumericInput updateSelectInput updateDateInput updateCheckboxInput updateTextInput radioButtons removeModal selectizeInput textAreaInput observe updateSelectizeInput strong textOutput isolate h5 updateTextAreaInput
+#' @importFrom dplyr filter pull bind_cols bind_rows select mutate
+#' @importFrom DT renderDataTable datatable
+#' @importFrom lubridate ymd
+#' @importFrom readr write_delim
+#' @importFrom rmarkdown render
+#' @importFrom sassr compile_sass
+#' @importFrom shiny tableOutput renderTable
+#' @importFrom shinyFiles shinyDirButton getVolumes shinyDirChoose parseDirPath
+#' @importFrom shinyjs hide
+#' @importFrom tibble tibble as_tibble add_row
+#' 
+#' @export
+#' @rdname mod_edit_billsUI
+mod_edit_bills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), quotesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill") {
   
   #####################################################
   ##############  INITIALISATION   ####################
@@ -45,7 +87,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   observeEvent(data(), {
      rv$update <- 0
      # Pour stocker les presta dans un tableau au fur et à mesure qu'on en ajoute
-     rv$datapresta <- tibble::tibble(
+     rv$datapresta <- tibble(
        Designation = vector(mode = "character"),
        Quantity = vector(mode = "double"),
        Unit = vector(mode = "character"),
@@ -121,7 +163,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     )
     )
     mylist[[4]] <- h4("Description des prestations")
-    mylist[[5]] <- shiny::tableOutput(ns("allservice"))
+    mylist[[5]] <- tableOutput(ns("allservice"))
     mylist[[6]] <- br()
     mylist[[7]] <- fluidRow(
       column(width = 6, textAreaInput(inputId = ns("design"), label = "Designation", resize = "none", value = "")),
@@ -158,7 +200,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   })
   # DEFINITION PRESTATIONS
   dttemp <- reactive({    
-    tibble::tibble(
+    tibble(
       Designation = input$design,
       Quantity = input$qtity,
       Unit = input$unit,
@@ -167,7 +209,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   # Action du bouton pour ajouter des lignes de presta
   observeEvent(input$add_service, {
     rv$datapresta <- rbind(rv$datapresta, dttemp())
-    output$allservice <- shiny::renderTable(rv$datapresta)
+    output$allservice <- renderTable(rv$datapresta)
     #show("allservice")
     #rv$datapresta[,'Quantity'] <- gsub("[.]", ",", as.character(unlist(rv$datapresta[,'Quantity'])))
     #rv$datapresta[,'Unit_price'] <- gsub("[.]", ",", as.character(unlist(rv$datapresta[,'Unit_price'])))
@@ -178,13 +220,13 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   })
   # Resetting 'devis' creation page
   observeEvent(input$reset_page, {
-    rv$datapresta <- tibble::tibble(
+    rv$datapresta <- tibble(
       Designation = vector(mode = "character"),
       Quantity = vector(mode = "double"),
       Unit = vector(mode = "character"),
       Unit_price = vector(mode = "double")
     )
-    shinyjs::hide("allservice")
+    hide("allservice")
     #reset("create_devis_page")
   })
   
@@ -297,13 +339,13 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   # Update (add new) button
   # -----------------------
   observeEvent(input$update, {
-    x <- tibble::as_tibble(df())
-    dd <- tibble::as_tibble(dfserv())
-    x1 <- tibble::add_row(x)
+    x <- as_tibble(df())
+    dd <- as_tibble(dfserv())
+    x1 <- add_row(x)
     rv$no <- nrow(x1)
     ids <- rv$no
     if (mode == "quote") {
-      presta <- tibble::as_tibble(isolate(rv$datapresta))
+      presta <- as_tibble(isolate(rv$datapresta))
       amount <- sum(presta$Quantity*presta$Unit_price)
       x1$ID_Quote[ids] <- input$id_est
       x1$ID_Client[ids] <- input$dclient
@@ -313,7 +355,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       x1$Net_payable[ids] <- amount*(1 - (input$discount/100))
       x1$Status[ids] <- "In_progress"
       x1$Status_comment[ids] <- ""
-      z <- bind_cols(tibble::tibble(ID_Quote = rep(x1$ID_Quote[ids], nrow(rv$datapresta)),
+      z <- bind_cols(tibble(ID_Quote = rep(x1$ID_Quote[ids], nrow(rv$datapresta)),
                                     ID_Bill = rep("", nrow(rv$datapresta)),
                                     N_Service = 1:nrow(rv$datapresta)),
                      presta)
@@ -349,8 +391,8 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   observeEvent(input$delRow, {
     ids <- input$origTable_rows_selected
     if (length(ids) > 0) {
-      x <- tibble::as_tibble(df())
-      z <- tibble::as_tibble(dfserv())
+      x <- as_tibble(df())
+      z <- as_tibble(dfserv())
       if (mode == "quote") {
         idest <- x$ID_Quote[ids]
         newservices <<- z %>%
@@ -417,7 +459,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
       mylist[[4]] <- inline(actionButton(inputId = ns("right"), label = NULL, icon = icon("chevron-right",lib = "glyphicon")), m = 3)
       mylist[[5]] <- inline(actionButton(inputId = ns("end"), label = NULL, icon = icon("forward",lib = "glyphicon")), m = 3)
       mylist[[6]] <- hr()
-      mydf <- tibble::as_tibble(mydf[rv$no,])
+      mydf <- as_tibble(mydf[rv$no,])
       mylist[[7]] <- inline(textInput(ns("status"), label = "Status", value = mydf$Status))
       if (mode == "quote") {
         mylist[[8]] <- inline(textInput(ns("comment"), label = "Comment", value = mydf$Status_comment))
@@ -435,7 +477,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   # Update Status button
   # --------------------
   observeEvent(input$update_status, {
-    x <- tibble::as_tibble(df())
+    x <- as_tibble(df())
     ids <- rv$no
     x$Status[ids] <- input$status
     rv$update <- rv$update + 1
@@ -493,7 +535,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   observeEvent(rv$no, {
     mydf <- df()
     if (!is.null(mydf)) {
-      mydf <- tibble::as_tibble(mydf[rv$no, ])
+      mydf <- as_tibble(mydf[rv$no, ])
       updateTextInput(session, "status", value = mydf$Status)
       if (mode == "quote") {
         updateTextInput(session, "comment", value = mydf$Status_comment)
@@ -688,10 +730,10 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
     tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
     tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
-    tempImage <- normalizePath(file.path(tempdir(), "name.png"), mustWork = FALSE)
-    file.copy("template.Rmd", tempReport, overwrite = TRUE)
-    file.copy("template_style.scss", tempSCSS, overwrite = TRUE)
-    file.copy("name.png", tempImage, overwrite = TRUE)
+    tempImage <- normalizePath(file.path(tempdir(), "logo.png"), mustWork = FALSE)
+    file.copy(system.file("www/template.Rmd", package = "manageR"), tempReport, overwrite = TRUE)
+    file.copy(system.file("www/template_style.scss", package = "manageR"), tempSCSS, overwrite = TRUE)
+    file.copy(system.file("www/logo.png", package = "manageR"), tempImage, overwrite = TRUE)
     
     # SCSS compilation
     if (mode == "quote") {
@@ -767,8 +809,8 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
     params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
     
     # knit the document
-    rmarkdown::render(tempReport, #output_file = input$output_name,
-                      params = params, #output_format = weasydoc::hpdf_document_base(),
+    render(tempReport, #output_file = input$output_name,
+                      params = params, #output_format = hpdf_document_base(),
                       envir = new.env(parent = globalenv()),
                       encoding = "UTF-8")
     
@@ -788,7 +830,7 @@ editBills <- function(input, output, session, data = reactive(NULL), servicesdat
   #################  DISPLAY DATATABLE   ####################
   ###########################################################
   
-  output$origTable <- DT::renderDataTable({
+  output$origTable <- renderDataTable({
     datatable(df(), selection = "single", caption = NULL)
   })
   

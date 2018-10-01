@@ -1,4 +1,7 @@
-usethis::use_build_ignore("devstuff_history.R")
+usethis::use_build_ignore("devstuffs_history.R")
+usethis::use_build_ignore("Files")
+usethis::use_build_ignore("my_docs")
+usethis::use_build_ignore("others")
 usethis::use_mit_license("Benjamin Louis")
 usethis::use_readme_md()
 usethis::use_code_of_conduct()

@@ -1,23 +1,32 @@
-server <- function(input, output, session) {
+#' Server function
+#' 
+#' @param input internal
+#' @param output internal
+#' @param session internal
+#'
+#' @importFrom readr cols col_character col_double col_integer
+#' @importFrom shiny callModule reactive observeEvent
+#' 
+app_server <- function(input, output, session) {
   
   # Home
   # ----
-  path <- callModule(wdLoad, "wd")
-  initquotes <- callModule(loadingOptions, "files", path = path, filename = "Quotes.csv", coltypes = cols(.default = col_character(), Amount = col_double(), Discount = col_double(), Net_payable = col_double()))
-  initbills <- callModule(loadingOptions, "files", path = path, filename = "Bills.csv", coltypes = cols(.default = col_character(), Amount = col_double(), Discount = col_double(), Net_payable = col_double(), Deposit = col_double()))
-  initclients <- callModule(loadingOptions, "files", path = path, filename = "Clients.csv")
-  initbillingaddresses <- callModule(loadingOptions, "files", path = path, filename = "Billing_Addresses.csv")
-  initservices <- callModule(loadingOptions, "files", path = path, filename = "Services.csv", coltypes = cols(.default = col_character(), N_Service = col_integer(), Quantity = col_double(), Unit_price = col_double()))
+  path <- callModule(mod_wd_load, "wd")
+  initquotes <- callModule(mod_loading_options, "files", path = path, filename = reactive("Quotes.csv"), coltypes = cols(.default = col_character(), Amount = col_double(), Discount = col_double(), Net_payable = col_double()))
+  initbills <- callModule(mod_loading_options, "files", path = path, filename = reactive("Bills.csv"), coltypes = cols(.default = col_character(), Amount = col_double(), Discount = col_double(), Net_payable = col_double(), Deposit = col_double()))
+  initclients <- callModule(mod_loading_options, "files", path = path, filename = reactive("Clients.csv"))
+  initbillingaddresses <- callModule(mod_loading_options, "files", path = path, filename = reactive("Billing_Addresses.csv"))
+  initservices <- callModule(mod_loading_options, "files", path = path, filename = reactive("Services.csv"), coltypes = cols(.default = col_character(), N_Service = col_integer(), Quantity = col_double(), Unit_price = col_double()))
   
   # Quotes
   # --------------
-  resquote <- callModule(editBills, "quotes", data = initquotes, servicesdata = initservices, clientsdata = clients, quotesdata = NULL, path = path, filename = c("Quotes.csv", "Services.csv"), mode = "quote")
+  resquote <- callModule(mod_edit_bills, "quotes", data = initquotes, servicesdata = initservices, clientsdata = clients, quotesdata = NULL, path = path, filename = c("Quotes.csv", "Services.csv"), mode = "quote")
   quotes <- reactive(resquote$data())
   proxyservicesquote <- reactive(resquote$up())
   
   # Bills
   # -----
-  resbill <- callModule(editBills, "bills", data = initbills, servicesdata = services, clientsdata = clients, quotesdata = quotes, billingaddressesdata = billingaddresses, path = path, filename = c("Bills.csv", "Services.csv"), mode = "bill")
+  resbill <- callModule(mod_edit_bills, "bills", data = initbills, servicesdata = services, clientsdata = clients, quotesdata = quotes, billingaddressesdata = billingaddresses, path = path, filename = c("Bills.csv", "Services.csv"), mode = "bill")
   bills <- reactive(resbill$data())
   proxyservicesbill <- reactive(resbill$up())
   
@@ -37,13 +46,13 @@ server <- function(input, output, session) {
     }
     df
   })
-
+  
   
   # Clients
   # -------
-  clients <- callModule(editableDT, "clients", data = initclients, path = path, filename = "Clients.csv")#, ncol = 4)
+  clients <- callModule(mod_edit_table, "clients", data = initclients, path = path, filename = "Clients.csv")#, ncol = 4)
   
   # Billing addresses
   # -----------------
-  billingaddresses <- callModule(editableDT, "billingaddresses", data = initbillingaddresses, path = path, filename = "Billing_Addresses.csv")#, ncol = 4)
+  billingaddresses <- callModule(mod_edit_table, "billingaddresses", data = initbillingaddresses, path = path, filename = "Billing_Addresses.csv")#, ncol = 4)
 }
