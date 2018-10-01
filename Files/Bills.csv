@@ -1,1 +1,3 @@
-ID_Bill;ID_Client;ID_Address;Date;Amount;Status;Payment
+ID_Bill;ID_Client;ID_Address;Date;Amount;Discount;Deposit;Net_payable;Status;Payment
+F1809-0002;C1809-0002;A1809-0003;30-09-2018;6e3;0;0;6e3;In_progress;NA
+F1809-0001;C1809-0001;A1809-0001;30-09-2018;645;5;100;512.75;In_progress;

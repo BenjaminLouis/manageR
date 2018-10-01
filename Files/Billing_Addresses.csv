@@ -1,1 +1,4 @@
-ID_Address;ID_Client;Company;Department;Register_Siret;Address1;Address2;Postal_code;City;Country
+ID_Address;ID_Workplace;Company;Department;Register_Siret;Address1;Address2;Postal_code;City;Country
+A1809-0001;W1809-0001;Company;Accounting office;800******00021;1 fictional street;;01000;Testcity;Nowhere
+A1809-0002;W1809-0001;Company2;Money management;;3 fictional street;CS 01042;01000;Testcity Cedex;Nowhere
+A1809-0003;W1809-0002;Westerner;Bank;;Wild Wild West;;00000;Everywhere;USA

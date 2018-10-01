@@ -1,3 +1,4 @@
-ID_Quote;N_Service;Designation;Quantity;Unit;Unit_price
-D1809-0001;1;presta1;4;Jour;500
-D1809-0001;2;presta2;1;Heure;150
+ID_Quote;ID_Bill;N_Service;Designation;Quantity;Unit;Unit_price
+D1809-0002;F1809-0002;1;Presta;6;Week;1e3
+D1809-0001;F1809-0001;1;presta1;1;Jour;300
+D1809-0001;F1809-0001;2;presta2;3;Heure;115

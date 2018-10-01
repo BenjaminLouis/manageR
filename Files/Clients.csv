@@ -1,3 +1,3 @@
-ID_Client;Firstname;Name;Company;Department;Address1;Address2;Postal_code;City;Country;Office_line;Mobile_line;e_mail;ID_Address1;ID_Address2
-C1809-0002;Client2;Nom_de_famille;;;4 rue fictive;;01000;Testcity;Country;+33(0)100000001;;contact2@email.com;;
-C1809-0001;Firstname;Name;Company;;Addresse1;Addresse2;21000;City;Country;;;;;
+ID_Client;Firstname;Name;Company;Department;Address1;Address2;Postal_code;City;Country;Office_line;Mobile_line;e_mail;ID_Workplace
+C1809-0001;Firstname;Name;Company;Department;1 fictional street;;1000;Testcity;Nowhere;+33(0)1 00 00 00 00;;contact@email.com;W1809-0001
+C1809-0002;Billy;TheKid;Westerner;Outlaw;Wild Wild West;;0;Everywhere;USA;;;;W1809-0002
