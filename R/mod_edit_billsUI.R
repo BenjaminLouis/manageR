@@ -48,7 +48,7 @@ mod_edit_billsUI <- function(id, docmode = "bill") {
 #' @importFrom lubridate ymd
 #' @importFrom readr write_delim
 #' @importFrom rmarkdown render
-#' @importFrom sassr compile_sass
+#' @importFrom sass sass sass_import
 #' @importFrom shiny tableOutput renderTable
 #' @importFrom shinyFiles shinyDirButton getVolumes shinyDirChoose parseDirPath
 #' @importFrom shinyjs hide
@@ -726,11 +726,11 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     # Copy the report file to a temporary directory before processing it, in
     # case we don't have write permissions to the current working dir (which
     # can happen when deployed).
-    tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE)
-    tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE)
-    tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE)
-    tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE)
-    tempImage <- normalizePath(file.path(tempdir(), "logo.png"), mustWork = FALSE)
+    tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE, winslash = "/")
+    tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE, winslash = "/")
+    tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE, winslash = "/")
+    tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE, winslash = "/")
+    tempImage <- normalizePath(file.path(tempdir(), "logo.png"), mustWork = FALSE, winslash = "/")
     file.copy(system.file("www/template.Rmd", package = "manageR"), tempReport, overwrite = TRUE)
     file.copy(system.file("www/template_style.scss", package = "manageR"), tempSCSS, overwrite = TRUE)
     file.copy(system.file("www/logo.png", package = "manageR"), tempImage, overwrite = TRUE)
@@ -745,7 +745,7 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
       ndoc <- pull(mydf[ids,], ID_Bill)
     }
     write(x = paste0("$columns: 12; \n$doc: \"", doc, "\"; \n$ndoc: \"", ndoc, "\";"), file = tempVar)
-    compile_sass(file = tempSCSS, output = tempCSS)
+    sass(input = sass_import(tempSCSS), output = tempCSS)
     
     # Set up parameters to pass to Rmd document
     params <- list(info = list(), config = list(), client = list(), services = list())

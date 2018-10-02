@@ -11,18 +11,17 @@ Imports:
     magrittr,
     readr,
     rmarkdown,
-    sassr,
+    sass,
     shiny,
     shinydashboard,
     shinyFiles,
     shinyjs,
-    tibble,
-    weasydoc
+    tibble
 Suggests: 
     knitr
-Remotes:
+Remotes: 
     github::RLesur/weasydoc,
-    github::rstudio/sassr
+    github::rstudio/sass
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
