@@ -27,7 +27,8 @@ Imports:
     tidyr
 Remotes: 
     github::RLesur/weasydoc,
-    github::rstudio/sass
+    github::rstudio/sass,
+    github::rstudio/fontawesome
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
