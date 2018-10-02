@@ -22,7 +22,7 @@ Suggests:
     knitr
 Remotes:
     github::RLesur/weasydoc,
-    github::RStudio/sassr
+    github::rstudio/sassr
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
