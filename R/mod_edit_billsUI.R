@@ -730,10 +730,10 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE, winslash = "/")
     tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE, winslash = "/")
     tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE, winslash = "/")
-    tempImage <- normalizePath(file.path(tempdir(), "logo.png"), mustWork = FALSE, winslash = "/")
+    tempImage <- normalizePath(file.path(tempdir(), "logo_template.png"), mustWork = FALSE, winslash = "/")
     file.copy(system.file("www/template.Rmd", package = "manageR"), tempReport, overwrite = TRUE)
     file.copy(system.file("www/template_style.scss", package = "manageR"), tempSCSS, overwrite = TRUE)
-    file.copy(system.file("www/logo.png", package = "manageR"), tempImage, overwrite = TRUE)
+    file.copy(system.file("www/logo_template.png", package = "manageR"), tempImage, overwrite = TRUE)
     
     # SCSS compilation
     if (mode == "quote") {
@@ -807,6 +807,8 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
                           city = "Testcity", mobile = "+33(0)6 00 00 00 00", e_mail = "contact@email.com", web = "www.siteweb.com", 
                           siret = "xxxxxxxxxxxxxxxxxx")
     params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
+    params$logo <- list(yes = TRUE, file = "logo_template.png", width = "35mm")
+    params$services$tva <- "no"
     
     # knit the document
     render(tempReport, #output_file = input$output_name,

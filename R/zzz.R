@@ -1,2 +1,2 @@
 # list all global variables
-globalVariables(c("Address1", "Address2", "Amount", "City", "Company", "Date", "Department", "Deposit", "Designation", "Discount", "Firstname", "ID_Address", "ID_Bill", "ID_Client", "ID_Quote", "ID_Workplace", "Name", "Net_payable", "Office_line", "Postal_code", "Quantity", "Register_Siret", "Unit", "Unit_price", "e_mail"))
+globalVariables(c("Address1", "Address2", "Amount", "City", "Company", "Date", "Department", "Deposit", "Designation", "Discount", "Firstname", "ID_Address", "ID_Bill", "ID_Client", "ID_Quote", "ID_Workplace", "Name", "Net_payable", "Office_line", "Postal_code", "Quantity", "Register_Siret", "Unit", "Unit_price", "e_mail", "lconfig", "key", "Total"))

@@ -24,6 +24,11 @@ params:
       e_mail: "contact@email.com"
       web: "www.siteweb.com"
       siret: "xxxxxxxxxxxxxxxxxx"
+  logo: 
+    value:
+      yes: TRUE
+      file: "logo_template.png"
+      width: 35mm
   client:
     value:
       firstname: "firstname"
@@ -52,6 +57,7 @@ params:
     value:
       data: NA
       totdata: NA
+      tva: "no"
   bankinfo:
     value:
       holder: "HOLDER"
@@ -62,39 +68,7 @@ params:
 
 ```{r setup, include=FALSE}
 options(knitr.kable.NA = '')
-library(htmltools)
-library(glue)
-library(dplyr)
-library(tidyr)
-library(knitr)
-library(kableExtra)
-library(fontawesome)
-library(stringr)
-tagList(rmarkdown::html_dependency_font_awesome())
-if (Sys.info()["sysname"] == "Linux") {
-  insert_fa <- function(x) { glue("<i class=\"fa fa-{x}\"></i>") }
-}
-if (Sys.info()["sysname"] == "Windows") {
-  insert_fa <- function(x) { 
-    fa_r <- fa(glue("{x}"))
-    fa_r_raw <- charToRaw(fa_r)
-    fa_r_enc <- paste0("data:image/svg+xml;charset=utf-8;base64,", base64enc::base64encode(fa_r_raw))
-    glue("<img alt=\"icon\" src=\"{fa_r_enc}\">")
-  }
-}
-remove_header <- function(x) { gsub("<thead>.*</thead>", "", x) }
-concatenate <- function(...) {
-  st <- glue(..., .na = "", .sep = " ")
-  st <- gsub("\\s{2,}", " ", st)
-  st <- gsub("(^\\s+)|(\\s+$)", "", st)
-  st <- gsub("^$", NA, st)
-  return(st)
-}
-parse_amount <- function(x) {
-  x <- format(x, nsmall = 2)
-  x <- gsub("\\.", ",", x)
-  x <- paste(x, "€")
-}
+htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 ```
 
 
@@ -116,37 +90,17 @@ parse_amount <- function(x) {
 <div class = "row">
 
 <div class = "col-5">
-![logo](logo.png){width=35mm}
+```{r echo = FALSE}
+process_logo(params$logo)
+```
 
 :::{.big}
-`r if(!params$config$name %in% c("NA", "") & !is.na(params$config$name)) params$config$name`
+`r process_name(params$config$name)`
 :::
 
 <div class = "address">
 ```{r echo = FALSE, warning = FALSE}
-lconfig <- params$config
-lconfig <- lconfig[names(lconfig) != "name"]
-lconfig[lconfig == "NA" | lconfig == ""] <- NA
-lconfig$address3 <- concatenate(lconfig$postal_code, lconfig$city)
-lconfig <- lconfig[c("address1", "address2", "address3", "mobile", "e_mail", "web", "siret")]
-if (!is.na(lconfig$siret)) { lconfig$siret <- paste(":", lconfig$siret)}
-lconfig <- lconfig[!is.na(lconfig)]
-address = insert_fa("home")
-mobile = insert_fa("mobile-alt")
-e_mail = insert_fa("at")
-web = insert_fa("globe")
-siret = "Siret" 
-lconfig <- as_tibble(lconfig) %>%
-  gather() %>%
-  mutate(key = gsub("address\\d", "address", key)) %>%
-  mutate(key = paste0("{", key, "}")) %>%
-  kable() %>%
-  column_spec(column = 1, width = "8mm", extra_css = "text-align:center;") %>%
-  collapse_rows(valign = "top") %>%
-  glue() %>%
-  remove_header() %>%
-  HTML()
-lconfig
+process_config(params$config)
 ```
 </div>
 
@@ -158,20 +112,15 @@ lconfig
 <div class = "row">
 
 :::{.boxheader}
-`r HTML(paste0("<p>Date</p>", "<hr><p>", ifelse(params$info$date == "NA", format(Sys.Date(), "%d/%m/%Y"), params$info$date), "</p>"))`
+`r process_boxheader(params$info, which = 1)`
 :::
 
 :::{.boxheader}
-`r HTML(paste0("<p>N° " , params$info$doc, "</p><hr><p>", params$info$ndoc, "</p>"))`
+`r process_boxheader(params$info, which = 2)`
 :::
 
 :::{.boxheader}
-
-```{r echo = FALSE} 
-nclient <- unlist(str_split(params$info$nclient, pattern = "\n"))
-nclient <- paste0("<p>", nclient, "</p>", collapse = "")
-HTML(paste0("<p>N° Client", "<hr>", nclient))
-```
+`r process_boxheader(params$info, which = 3)`
 :::
 
 </div>
@@ -179,38 +128,7 @@ HTML(paste0("<p>N° Client", "<hr>", nclient))
 <div class = "row">
 
 ```{r echo = FALSE}
-lclient <- params$client
-lclient[lclient == "NA" | lclient == ""] <- NA
-lclient$who <- concatenate(lclient$firstname, lclient$name)
-lclient$where <- concatenate(lclient$company, lclient$department)
-lclient$address3 <- concatenate(lclient$postal_code, lclient$city)
-lclient <- lclient[c("who", "where","address1", "address2", "address3", "mobile", "e_mail")]
-lclient <- lclient[!is.na(lclient)]
-lclient <- lapply(lclient, function(x) paste("<p>", x ,"</p>"))
-header <- switch(tolower(params$info$doc),
-                 facture = "Livraison :",
-                 devis = "Client :",
-                 invoice = "Delivery :",
-                 quote = "Client :")
-box1 <- paste0("<p class = \"headclient\">", header, 
-               "</p>",paste(lclient, collapse = ""))
-if (tolower(params$info$doc) %in% c("facture", "invoice")) {
-  lbilling <- params$billing
-  lbilling[lbilling == "NA" | lbilling == ""] <- NA
-  lbilling$where <- concatenate(lbilling$company, lbilling$department)
-  lbilling$address3 <- concatenate(lbilling$postal_code, lbilling$city)
-  if (!is.na(lbilling$siret)) { lbilling$siret <- paste("Siret", lconfig$siret)}
-  lbilling <- lbilling[c("where", "siret","address1", "address2", "address3", "mobile", "e_mail")]
-  lbilling <- lbilling[!is.na(lbilling)]
-  lbilling <-  lapply(lbilling, function(x) paste("<p>", x ,"</p>"))
-  header <- switch(tolower(params$info$doc),
-                   facture = "Facturation :",
-                   invoice = "Billing :")
-  box <- paste0("<div class = \"box\" id = \"bill\"><div class = \"row\"><div class = \"col-6\">",box1,"</div><div class = \"col-6\"><p class = \"headclient\">", header, "</p>",paste(lbilling, collapse = ""), "</div></div></div>")
-} else {
-  box <- paste0("<div class = \"box\" id = \"quote\"><div class = \"row\">",box1,"</div></div>")
-}
-HTML(box)
+process_client(client = params$client, billing = params$billing, info = params$info)
 ```
 
 </div>
@@ -234,14 +152,7 @@ HTML(box)
 <div class = "row topm">
 
 ```{r echo = FALSE}
-if (tolower(params$info$doc) %in% c("invoice", "facture")) {
-  if (!(params$comment %in% c("NA", "")) & !is.na(params$comment)) {
-    comment <- paste("<p class = \"bold\">Commentaire : </p><p>", params$comment,"</p>")
-  } else {
-    comment <- "<p></p>"
-  }
-  HTML(comment)
-}
+process_comment(comment = params$comment, info = params$info)
 ```
 
 </div>
@@ -249,27 +160,7 @@ if (tolower(params$info$doc) %in% c("invoice", "facture")) {
 <div class = "row services">
 
 ```{r echo = FALSE}
-data <- tibble('Désignation' = NA,#character(),
-                   'Quantité' = NA,#double(),
-                   'Unité' = NA,#character(),
-                   'Prix unitaire' = NA,#double(),
-                   'Total' = NA)#double())
-if (any(!(params$services$data %in% c("NA", ""))) & any(!is.na(params$services$data))) {
-  temp <- params$services$data
-  colnames(temp) <- colnames(data)
-  data <- bind_rows(data, temp)
-  data <- data[-1,]
-}
-data %>%
-  mutate_at(vars(matches('Prix unitaire')), parse_amount) %>%
-  mutate('Total' = parse_amount(Total)) %>%
-  kable(format = "html") %>%
-  column_spec(column = 1, width = "42%", extra_css = "text-align:justify;") %>%
-  column_spec(column = 2, width = "13%", extra_css = "text-align:right;") %>%
-  column_spec(column = 3, width = "11%", extra_css = "text-align:right;") %>%
-  column_spec(column = 4, width = "18%", extra_css = "text-align:right;") %>%
-  column_spec(column = 5, width = "16%", extra_css = "text-align:right;") %>%
-  HTML()
+process_services(params$services)
 ```
 
 </div>
@@ -277,24 +168,13 @@ data %>%
 <div class = "row total">
 
 ```{r echo = FALSE}
-totdata <- tibble(
-          x = c("Amount", "Discount", "Deposit", "Net payable"),
-          y = c(0, paste(0, "%"), 0, 0)
-        )
-if (any(!(params$services$totdata %in% c("NA", ""))) & any(!is.na(params$services$totdata))) {
-  totdata <- params$services$totdata
-}
-totdata[totdata$x != "Discount", 2] <- parse_amount(as.numeric(unlist(totdata[totdata$x != "Discount", 2]))) # ugly!
-totdata %>%
-  kable(format = "html") %>%
-  column_spec(column = 1, width = "53%", extra_css = "text-align:right; font-weight:bold;") %>%
-  column_spec(column = 2, width = "47%", extra_css = "text-align:right;") %>%
-  remove_header() %>%
-  HTML()
+process_total(params$services)
 ```
 
 :::{.foottable}
-TVA non applicable, article 293B du CGI
+```{r echo = FALSE}
+process_tva(params$services)
+```
 :::
 
 </div>
@@ -309,19 +189,7 @@ TVA non applicable, article 293B du CGI
 <footer>
 
 ```{r echo = FALSE}
-if (tolower(params$info$doc) %in% c("devis", "quote")) {
-  foot <- paste("<p id = \"footquote\">Afin de valider ce devis, merci de le signer et le renvoyer à", params$config$e_mail, ":</p>",
-                "<div class = \"footbox\"><p class = \"medium\">Bon pour accord le : </p>",
-                "<p class = \"medium\">Signature : </p></div>")
-}
-if (tolower(params$info$doc) %in% c("facture", "invoice")) {
-  foot <- paste("<p>Merci d’effectuer le paiement à réception de la facture par virement bancaire en utilisant les coordonnées ci-dessous et en précisant le numéro de la facture dans le libellé :</p>",
-      "<table><tr><th class = \"bold\">Titulaire :</th><th>",params$bankinfo$holder,"</th></tr>",
-      "<tr><th class = \"bold\">Banque :</th><th>",params$bankinfo$bank,"</th></tr>",
-      "<tr><th class = \"bold\">BIC :</th><th>",params$bankinfo$bic,"</th></tr>",
-      "<tr><th class = \"bold\">IBAN :</th><th>",params$bankinfo$iban,"</th></tr></table>")
-}
-HTML(foot)
+process_bank(info = params$info, bankinfo = params$bankinfo, config = params$config)
 ```
 
 </footer>

@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{inline}
 \alias{inline}
-\title{A function ti display shiny elements inline}
+\title{A function to display shiny elements inline}
 \usage{
 inline(x, m = 10, va = "top")
 }
@@ -17,7 +17,7 @@ inline(x, m = 10, va = "top")
 the element to display in a html div tag with the relevant css style
 }
 \description{
-A function ti display shiny elements inline
+A function to display shiny elements inline
 }
 \examples{
 \dontrun{

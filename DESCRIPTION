@@ -5,8 +5,14 @@ Authors@R: person("Benjamin", "Louis", , "contact@benjaminlouis-stat.fr", c("aut
 Description: The package {manageR} contains a dashboard shiny app that give tools to freelancers to help with day to day management. So far, the app allows to organise data about clients, billing addresses, quotes and invoices. Users are able to print personalised pdf of quotes and invoices based on saved data.
 License: MIT + file LICENSE
 Imports: 
+    base64enc,
     dplyr,
     DT,
+    fontawesome,
+    glue,
+    htmltools,
+    kableExtra,
+    knitr,
     lubridate,
     magrittr,
     readr,
@@ -16,9 +22,9 @@ Imports:
     shinydashboard,
     shinyFiles,
     shinyjs,
-    tibble
-Suggests: 
-    knitr
+    stringr,
+    tibble,
+    tidyr
 Remotes: 
     github::RLesur/weasydoc,
     github::rstudio/sass
