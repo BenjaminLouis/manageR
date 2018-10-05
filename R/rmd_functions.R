@@ -204,10 +204,10 @@ process_services <- function(services) {
     mutate_at(vars(matches('Prix unitaire')), parse_amount) %>%
     mutate('Total' = parse_amount(Total)) %>%
     kable(format = "html") %>%
-    column_spec(column = 1, width = "42%", extra_css = "text-align:justify;") %>%
+    column_spec(column = 1, width = "40%", extra_css = "text-align:justify;") %>%
     column_spec(column = 2, width = "13%", extra_css = "text-align:right;") %>%
     column_spec(column = 3, width = "11%", extra_css = "text-align:right;") %>%
-    column_spec(column = 4, width = "18%", extra_css = "text-align:right;") %>%
+    column_spec(column = 4, width = "20%", extra_css = "text-align:right;") %>%
     column_spec(column = 5, width = "16%", extra_css = "text-align:right;") %>%
     HTML()
   return(data)
@@ -236,10 +236,11 @@ process_total <- function(services) {
     totdata <- services$totdata
   }
   totdata[totdata$x != "Discount", 2] <- parse_amount(as.numeric(unlist(totdata[totdata$x != "Discount", 2]))) # ugly!
+  totdata$x <- c("Total", "Remise", "Acompte", "Net à payer")
   totdata <- totdata %>%
     kable(format = "html") %>%
-    column_spec(column = 1, width = "53%", extra_css = "text-align:right; font-weight:bold;") %>%
-    column_spec(column = 2, width = "47%", extra_css = "text-align:right;") %>%
+    column_spec(column = 1, width = "55.6%", extra_css = "text-align:right; font-weight:bold;") %>%
+    column_spec(column = 2, width = "44.4%", extra_css = "text-align:right;") %>%
     remove_header() %>%
     HTML()
   return(totdata)
