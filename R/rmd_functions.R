@@ -217,6 +217,7 @@ process_services <- function(services) {
 #' Internal function to process the total part in Rmd template. Do not use outside
 #'
 #' @param services services list from YAML params
+#' @param mode doc mode from YAML params
 #'
 #' @importFrom htmltools HTML
 #' @importFrom kableExtra column_spec
@@ -227,16 +228,28 @@ process_services <- function(services) {
 #' 
 #' @example
 #' ##Internal function
-process_total <- function(services) {
-  totdata <- tibble(
-    x = c("Amount", "Discount", "Deposit", "Net payable"),
-    y = c(0, paste(0, "%"), 0, 0)
-  )
+process_total <- function(services, mode) {
+  if (tolower(mode) %in% c("devis", "quote")) {
+    totdata <- tibble(
+      x = c("Amount", "Discount", "Net payable"),
+      y = c(0, paste(0, "%"), 0)
+    ) 
+  } else if (tolower(mode) %in% c("facture", "invoice")) {
+    totdata <- tibble(
+      x = c("Amount", "Discount", "Deposit", "Net payable"),
+      y = c(0, paste(0, "%"), 0, 0)
+    ) 
+  }
   if (any(!(services$totdata %in% c("NA", ""))) & any(!is.na(services$totdata))) {
     totdata <- services$totdata
   }
   totdata[totdata$x != "Discount", 2] <- parse_amount(as.numeric(unlist(totdata[totdata$x != "Discount", 2]))) # ugly!
-  totdata$x <- c("Total", "Remise", "Acompte", "Net \u00e0 payer")
+  if (tolower(mode) %in% c("devis", "quote")) {
+    totdata$x <- c("Total", "Remise", "Net \u00e0 payer")
+  } else if (tolower(mode) %in% c("facture", "invoice")) {
+    totdata$x <- c("Total", "Remise", "Acompte", "Net \u00e0 payer") 
+  }
+
   totdata <- totdata %>%
     kable(format = "html") %>%
     column_spec(column = 1, width = "55.6%", extra_css = "text-align:right; font-weight:bold;") %>%

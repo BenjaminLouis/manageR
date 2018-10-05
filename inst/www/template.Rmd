@@ -84,9 +84,6 @@ htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 
 <div class = "grid-container">
 
----
-### First Row = Header
----
 <div class = "row">
 
 <div class = "col-5">
@@ -168,7 +165,7 @@ process_services(params$services)
 <div class = "row total">
 
 ```{r echo = FALSE}
-process_total(params$services)
+process_total(params$services, mode = params$info$doc)
 ```
 
 :::{.foottable}

@@ -4,10 +4,12 @@
 \alias{process_total}
 \title{Internal function to process the total part in Rmd template. Do not use outside}
 \usage{
-process_total(services)
+process_total(services, mode)
 }
 \arguments{
 \item{services}{services list from YAML params}
+
+\item{mode}{doc mode from YAML params}
 }
 \description{
 Internal function to process the total part in Rmd template. Do not use outside
