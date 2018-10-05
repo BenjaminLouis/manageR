@@ -236,7 +236,7 @@ process_total <- function(services) {
     totdata <- services$totdata
   }
   totdata[totdata$x != "Discount", 2] <- parse_amount(as.numeric(unlist(totdata[totdata$x != "Discount", 2]))) # ugly!
-  totdata$x <- c("Total", "Remise", "Acompte", "Net à payer")
+  totdata$x <- c("Total", "Remise", "Acompte", "Net \u00e0 payer")
   totdata <- totdata %>%
     kable(format = "html") %>%
     column_spec(column = 1, width = "55.6%", extra_css = "text-align:right; font-weight:bold;") %>%
