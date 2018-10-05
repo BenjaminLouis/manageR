@@ -10,7 +10,7 @@ mod_edit_billsUI(id, docmode = "bill")
 mod_edit_bills(input, output, session, data = reactive(NULL),
   servicesdata = reactive(NULL), clientsdata = reactive(NULL),
   quotesdata = NULL, billingaddressesdata = NULL, path, filename,
-  mode = "bill")
+  mode = "bill", settingsdata = reactive(NULL))
 }
 \arguments{
 \item{id}{shiny id}
@@ -25,19 +25,21 @@ mod_edit_bills(input, output, session, data = reactive(NULL),
 
 \item{data}{reactive data with bill or quote information}
 
-\item{servicesdata}{reactive data withe services information}
+\item{servicesdata}{reactive data with services information}
 
-\item{clientsdata}{reactive data withe clients information}
+\item{clientsdata}{reactive data with clients information}
 
 \item{quotesdata}{only if \code{mode = "bill"}. Reactive data with quotes information}
 
-\item{billingaddressesdata}{reactive data withe billind addresses information}
+\item{billingaddressesdata}{reactive data with billind addresses information}
 
 \item{path}{reactive string value. The path to the directory where the file will be exported}
 
 \item{filename}{string value. The name of the file when exported}
 
 \item{mode}{either \code{"quote"} to mange quote document or \code{"bill"} (default) to manage bill document}
+
+\item{settingsdata}{reactive data with settings information}
 }
 \description{
 A shiny module to manage quote and bill data. This shiny module is

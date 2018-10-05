@@ -149,7 +149,7 @@ mod_edit_settings <- function(input, output, session, settingsdata, package) {
   
   # Return
   # ------
-  return(reactive(xml))
+  return(xml)
   
 }
 

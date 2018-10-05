@@ -23,13 +23,13 @@ app_server <- function(input, output, session) {
   
   # Quotes
   # --------------
-  resquote <- callModule(mod_edit_bills, "quotes", data = initquotes, servicesdata = initservices, clientsdata = clients, quotesdata = NULL, path = path, filename = c("Quotes.csv", "Services.csv"), mode = "quote")
+  resquote <- callModule(mod_edit_bills, "quotes", data = initquotes, servicesdata = initservices, clientsdata = clients, quotesdata = NULL, path = path, filename = c("Quotes.csv", "Services.csv"), mode = "quote", settingsdata = settings)
   quotes <- reactive(resquote$data())
   proxyservicesquote <- reactive(resquote$up())
   
   # Bills
   # -----
-  resbill <- callModule(mod_edit_bills, "bills", data = initbills, servicesdata = services, clientsdata = clients, quotesdata = quotes, billingaddressesdata = billingaddresses, path = path, filename = c("Bills.csv", "Services.csv"), mode = "bill")
+  resbill <- callModule(mod_edit_bills, "bills", data = initbills, servicesdata = services, clientsdata = clients, quotesdata = quotes, billingaddressesdata = billingaddresses, path = path, filename = c("Bills.csv", "Services.csv"), mode = "bill", settingsdata = settings)
   bills <- reactive(resbill$data())
   proxyservicesbill <- reactive(resbill$up())
   
