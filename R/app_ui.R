@@ -38,7 +38,9 @@ app_ui <- function() {
           h4("Welcome to manageR !!"),
           mod_wd_loadUI("wd"),
           br(),
-          mod_loading_optionsInput("files")
+          mod_loading_optionsInput("files"),
+          br(),
+          mod_edit_settingsInput("config")
         ),
         
         # Quotes tab

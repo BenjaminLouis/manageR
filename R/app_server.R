@@ -6,11 +6,14 @@
 #'
 #' @importFrom readr cols col_character col_double col_integer
 #' @importFrom shiny callModule reactive observeEvent
+#' @importFrom xml2 read_xml
 #' 
 app_server <- function(input, output, session) {
   
   # Home
   # ----
+  initsets <- reactive(read_xml(system.file("www/config.xml", package = "manageR")))
+  settings <- callModule(mod_edit_settings, "config", settingsdata = initsets, package = "manageR")
   path <- callModule(mod_wd_load, "wd")
   initquotes <- callModule(mod_loading_options, "files", path = path, filename = reactive("Quotes.csv"), coltypes = cols(.default = col_character(), Amount = col_double(), Discount = col_double(), Net_payable = col_double()))
   initbills <- callModule(mod_loading_options, "files", path = path, filename = reactive("Bills.csv"), coltypes = cols(.default = col_character(), Amount = col_double(), Discount = col_double(), Net_payable = col_double(), Deposit = col_double()))

@@ -16,7 +16,7 @@
     <file type = "image" label = "Choose your image">logo_template.png</file>
     <width type = "text" label = "Width">35mm</width>
   </logo>
-  <bankinfo type = "text" label = "Your bank information">
+  <bankinfo type = "title" label = "Your bank information">
     <holder type = "text" label = "Holder">HOLDER</holder>
     <bank type = "text" label = "Bank name">Bank of fake</bank>
     <bic type = "text" label = "BIC">CCHAJUSAHXX</bic>

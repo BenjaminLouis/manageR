@@ -15,6 +15,7 @@ Imports:
     knitr,
     lubridate,
     magrittr,
+    purrr,
     readr,
     rmarkdown,
     sass,
@@ -24,11 +25,12 @@ Imports:
     shinyjs,
     stringr,
     tibble,
-    tidyr
+    tidyr,
+    xml2
 Remotes: 
     github::RLesur/weasydoc,
-    github::rstudio/sass,
-    github::rstudio/fontawesome
+    github::rstudio/fontawesome,
+    github::rstudio/sass
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
