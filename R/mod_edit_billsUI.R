@@ -34,14 +34,15 @@ mod_edit_billsUI <- function(id, docmode = "bill") {
 #' @param output internal
 #' @param session internal
 #' @param data reactive data with bill or quote information
-#' @param servicesdata reactive data withe services information
-#' @param clientsdata reactive data withe clients information
+#' @param servicesdata reactive data with services information
+#' @param clientsdata reactive data with clients information
 #' @param quotesdata only if \code{mode = "bill"}. Reactive data with quotes information
-#' @param billingaddressesdata reactive data withe billind addresses information
+#' @param billingaddressesdata reactive data with billind addresses information
 #' @param path reactive string value. The path to the directory where the file will be exported
 #' @param filename string value. The name of the file when exported
 #' @param mode either \code{"quote"} to mange quote document or \code{"bill"} (default) to manage bill document
-#'
+#' @param settingsdata reactive data with settings information
+#' 
 #' @importFrom shiny reactiveValues reactive observeEvent showModal modalDialog modalButton uiOutput tagList actionButton icon renderUI numericInput hr selectInput dateInput checkboxInput textInput h4 updateNumericInput updateSelectInput updateDateInput updateCheckboxInput updateTextInput radioButtons removeModal selectizeInput textAreaInput observe updateSelectizeInput strong textOutput isolate h5 updateTextAreaInput
 #' @importFrom dplyr filter pull bind_cols bind_rows select mutate
 #' @importFrom DT renderDataTable datatable
@@ -53,15 +54,16 @@ mod_edit_billsUI <- function(id, docmode = "bill") {
 #' @importFrom shinyFiles shinyDirButton getVolumes shinyDirChoose parseDirPath
 #' @importFrom shinyjs hide
 #' @importFrom tibble tibble as_tibble add_row
+#' @importFrom xml2 as_list
+#' @importFrom purrr map
 #' 
 #' @export
 #' @rdname mod_edit_billsUI
-mod_edit_bills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), quotesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill") {
+mod_edit_bills <- function(input, output, session, data = reactive(NULL), servicesdata = reactive(NULL), clientsdata = reactive(NULL), quotesdata = NULL, billingaddressesdata = NULL, path, filename, mode = "bill", settingsdata = reactive(NULL)) {
   
   #####################################################
   ##############  INITIALISATION   ####################
   #####################################################
-  
   
   rv <- reactiveValues(no = 1, update = 0)#, newdf = newdf)
   newdf <- NA # pour éviter un erreur avec l'utilisation de '<<-' qui est nécessaire
@@ -726,14 +728,17 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     # Copy the report file to a temporary directory before processing it, in
     # case we don't have write permissions to the current working dir (which
     # can happen when deployed).
+    sets <- settingsdata()
+    setslist <- as_list(sets)$settings
+    logoname <- setslist$logo$file
     tempReport <- normalizePath(file.path(tempdir(), "template.Rmd"), mustWork = FALSE, winslash = "/")
     tempSCSS <- normalizePath(file.path(tempdir(), "template_style.scss"), mustWork = FALSE, winslash = "/")
     tempCSS <- normalizePath(file.path(tempdir(), "template_style.css"), mustWork = FALSE, winslash = "/")
     tempVar <- normalizePath(file.path(tempdir(), "_variables.scss"), mustWork = FALSE, winslash = "/")
-    tempImage <- normalizePath(file.path(tempdir(), "logo.png"), mustWork = FALSE, winslash = "/")
+    tempImage <- normalizePath(file.path(tempdir(), logoname), mustWork = FALSE, winslash = "/")
     file.copy(system.file("www/template.Rmd", package = "manageR"), tempReport, overwrite = TRUE)
     file.copy(system.file("www/template_style.scss", package = "manageR"), tempSCSS, overwrite = TRUE)
-    file.copy(system.file("www/logo.png", package = "manageR"), tempImage, overwrite = TRUE)
+    file.copy(system.file(paste0("www/", logoname), package = "manageR"), tempImage, overwrite = TRUE)
     
     # SCSS compilation
     if (mode == "quote") {
@@ -803,10 +808,10 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
           y = c(amount, paste(discount, "%"), deposit, net)
         )
     }
-    params$config <- list(name = "Company name<br/> Services", address1 = "1 rue fictive", address2 = "test", postal_code = "01000",
-                          city = "Testcity", mobile = "+33(0)6 00 00 00 00", e_mail = "contact@email.com", web = "www.siteweb.com", 
-                          siret = "xxxxxxxxxxxxxxxxxx")
-    params$bankinfo <- list(holder = "HOLDER", bank = "Bank of fake", bic = "CCHAJUSAHXX", iban = "FR** **** **** **** **** **** ***")
+    params$config <- map(setslist$config, unlist)
+    params$bankinfo <- map(setslist$bankinfo, unlist)
+    params$logo <- map(setslist$logo, unlist)
+    params$services$tva <- "no"
     
     # knit the document
     render(tempReport, #output_file = input$output_name,
