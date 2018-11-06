@@ -20,8 +20,6 @@ mod_wd_load(input, output, session)
 }
 \description{
 A shiny module that load and display a path to a working directory
-
-mod_wd_load server function
 }
 \examples{
 library(shiny)

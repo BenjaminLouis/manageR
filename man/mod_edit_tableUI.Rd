@@ -7,8 +7,8 @@
 \usage{
 mod_edit_tableUI(id)
 
-mod_edit_table(input, output, session, data = reactive(NULL), width = 250,
-  path, filename)
+mod_edit_table(input, output, session, data = reactive(NULL),
+  width = 250, path, filename)
 }
 \arguments{
 \item{id}{shiny id}
@@ -31,8 +31,6 @@ mod_edit_table(input, output, session, data = reactive(NULL), width = 250,
 A shiny module to edit (add, edit, remove rows) a dataframe and
 export the result.
 It is strongly inspired from \url{https://github.com/cardiomoon/editData}
-
-mod_edit_table server function
 }
 \examples{
 library(shiny)

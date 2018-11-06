@@ -27,8 +27,6 @@ mod_loading_options(input, output, session, path, filename,
 }
 \description{
 A shiny module that read a delimited file (with \code{read_delim}) from a path and a filename. It is more a internal module than a module that works on itself.
-
-mod_loading_options server function
 }
 \examples{
 library(shiny)

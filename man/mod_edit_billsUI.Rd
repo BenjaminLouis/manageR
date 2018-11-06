@@ -44,8 +44,6 @@ mod_edit_bills(input, output, session, data = reactive(NULL),
 \description{
 A shiny module to manage quote and bill data. This shiny module is
 quiet big and in the future it should be divided in smaller module
-
-mod_edit_bills server function
 }
 \examples{
 ## No example yet

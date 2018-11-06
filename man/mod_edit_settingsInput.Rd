@@ -28,6 +28,4 @@ the modified reactive xml settings file
 \description{
 A shiny module to manage a settings file stored as xml in the www
 folder of the package
-
-mod_edit_settings server function
 }
