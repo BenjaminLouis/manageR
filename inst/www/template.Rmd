@@ -69,6 +69,7 @@ params:
 ```{r setup, include=FALSE}
 options(knitr.kable.NA = '')
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
+require(manageR)
 ```
 
 
