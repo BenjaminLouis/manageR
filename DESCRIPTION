@@ -1,24 +1,36 @@
 Package: manageR
-Title: What the Package Does (One Line, Title Case)
+Title: Shiny app to help freelancers
 Version: 0.0.0.9000
-Authors@R: person("First", "Last", , "first.last@example.com", c("aut", "cre"))
-Description: What the package does (one paragraph).
+Authors@R: person("Benjamin", "Louis", , "contact@benjaminlouis-stat.fr", c("aut", "cre"))
+Description: The package {manageR} contains a dashboard shiny app that give tools to freelancers to help with day to day management. So far, the app allows to organise data about clients, billing addresses, quotes and invoices. Users are able to print personalised pdf of quotes and invoices based on saved data.
 License: MIT + file LICENSE
 Imports: 
+    base64enc,
     dplyr,
     DT,
+    fontawesome,
+    glue,
+    htmltools,
+    kableExtra,
+    knitr,
     lubridate,
     magrittr,
+    purrr,
     readr,
     rmarkdown,
-    sassr,
+    sass,
     shiny,
     shinydashboard,
     shinyFiles,
     shinyjs,
-    tibble
-Suggests: 
-    knitr
+    stringr,
+    tibble,
+    tidyr,
+    xml2
+Remotes: 
+    github::RLesur/weasydoc,
+    github::rstudio/fontawesome,
+    github::rstudio/sass
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true

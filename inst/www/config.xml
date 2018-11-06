@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<settings>
+  <config type = "title" label = "Your information">
+    <name type = "text" label = "Company name">Company name</name>
+    <address1 type = "text" label = "Address 1">1 rue fictive</address1>
+    <address2 type = "text" label = "Address 2"></address2>
+    <postal_code type = "text" label = "Postal code">01000</postal_code>
+    <city type = "text" label = "City">Testcity</city>
+    <mobile type = "text" label = "Phone number">+33(0)6 00 00 00 00</mobile>
+    <e_mail type = "text" label = "Email address">contact@email.com</e_mail>
+    <web type = "text" label = "Website">www.siteweb.com</web>
+    <siret type = "text" label = "Company register/Siret">xxxxxxxxxxxxxxxxxx</siret>
+  </config>
+  <logo type = "title" label = "Your logo">
+    <yes type = "logical" label = "Display a logo ?">TRUE</yes>
+    <file type = "image" label = "Choose your image">logo_template.png</file>
+    <width type = "text" label = "Width">35mm</width>
+  </logo>
+  <bankinfo type = "title" label = "Your bank information">
+    <holder type = "text" label = "Holder">HOLDER</holder>
+    <bank type = "text" label = "Bank name">Bank of fake</bank>
+    <bic type = "text" label = "BIC">CCHAJUSAHXX</bic>
+    <iban type = "text" label = "IBAN">FR** **** **** **** **** **** ***</iban>
+  </bankinfo>
+</settings>
