@@ -12,6 +12,3 @@ process_name(name)
 \description{
 Internal function to process the company name part in Rmd template. Do not use outside
 }
-\examples{
-##Internal function
-}

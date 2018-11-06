@@ -12,6 +12,3 @@ process_logo(logo)
 \description{
 Internal function to process the logo part in Rmd template. Do not use outside
 }
-\examples{
-##Internal function
-}

@@ -6,8 +6,6 @@
 #' 
 #' @export
 #' 
-#' @examples
-#' ##Internal function
 process_logo <- function(logo) {
   image <- NULL
   if (logo$yes) {
@@ -25,8 +23,6 @@ process_logo <- function(logo) {
 #' 
 #' @export
 #' 
-#' @examples
-#' ##Internal function
 process_name <- function(name) {
   x <- NULL
   if (!name %in% c("NA", "") & !is.na(name)) {
@@ -49,8 +45,6 @@ process_name <- function(name) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_config <- function(config) {
   lconfig <- config
   lconfig <- lconfig[names(lconfig) != "name"]
@@ -87,8 +81,6 @@ process_config <- function(config) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_boxheader <- function(info, which) {
   if (which == 1) {
     tobox <- paste0("<p>Date</p><hr><p>", ifelse(info$date == "NA", format(Sys.Date(), "%d/%m/%Y"), info$date), "</p>")
@@ -113,8 +105,6 @@ process_boxheader <- function(info, which) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_client <- function(client, billing, info) {
   lclient <- client
   lclient[lclient == "NA" | lclient == ""] <- NA
@@ -160,8 +150,6 @@ process_client <- function(client, billing, info) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_comment <- function(comment, info) {
   if (tolower(info$doc) %in% c("invoice", "facture")) {
     if (!(comment %in% c("NA", "")) & !is.na(comment)) {
@@ -186,8 +174,6 @@ process_comment <- function(comment, info) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_services <- function(services) {
   data <- tibble('D\u00e9signation' = NA,#character(),
                  'Quantit\u00e9' = NA,#double(),
@@ -226,8 +212,6 @@ process_services <- function(services) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_total <- function(services, mode) {
   if (tolower(mode) %in% c("devis", "quote")) {
     totdata <- tibble(
@@ -267,8 +251,6 @@ process_total <- function(services, mode) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_tva <- function(services) {
   tva <- NULL
   if (services$tva == "no") {
@@ -288,8 +270,6 @@ process_tva <- function(services) {
 #' 
 #' @export
 #' 
-#' @example
-#' ##Internal function
 process_bank <- function(info, bankinfo, config) {
   if (tolower(info$doc) %in% c("devis", "quote")) {
     foot <- paste("<p id = \"footquote\">Afin de valider ce devis, merci de le signer et le renvoyer \u00e0", config$e_mail, ":</p>",

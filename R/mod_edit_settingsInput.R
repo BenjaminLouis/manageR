@@ -9,7 +9,7 @@
 #' @export
 #'
 #' @examples
-#' \dontrun(
+#' \dontrun{
 #' library(shiny)
 #' library(xml2)
 #' if (interactive()) {
@@ -18,19 +18,16 @@
 #' )
 #' 
 #' server <- function(input, output, session) {
-#'   initsetsdata <- reactive({
-#'     read_xml(system.file("www/config.xml", package = "manageR"))
-#'   })
+#'   initsetsdata <- reactive(read_xml(system.file("www/config.xml", package = "manageR")))
 #'   setsdata <- callModule(mod_edit_settings, 
 #'                          "config", 
 #'                          settingsdata = initsetsdata,
-#'                          package = "manageR
-#'   )
+#'                          package = "manageR)
 #' }
 #' 
 #' shinyApp(ui, server)
 #' }
-#' )
+#' }
 mod_edit_settingsInput <- function(id) {
   ns <- NS(id)
   tagList(actionButton(ns("config"), label = "Settings", icon = icon("settings", lib = "glyphicon")))
