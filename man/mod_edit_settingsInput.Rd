@@ -29,3 +29,24 @@ the modified reactive xml settings file
 A shiny module to manage a settings file stored as xml in the www
 folder of the package
 }
+\examples{
+\dontrun{
+library(shiny)
+library(xml2)
+if (interactive()) {
+ui <- fluidPage(
+  mod_edit_settingsInput("config")
+)
+
+server <- function(input, output, session) {
+  initsetsdata <- reactive(read_xml(system.file("www/config.xml", package = "manageR")))
+  setsdata <- callModule(mod_edit_settings, 
+                         "config", 
+                         settingsdata = initsetsdata,
+                         package = "manageR")
+}
+
+shinyApp(ui, server)
+}
+}
+}

@@ -14,7 +14,7 @@
 #' library(xml2)
 #' if (interactive()) {
 #' ui <- fluidPage(
-#'   mod_edit_settingsInput("config"),
+#'   mod_edit_settingsInput("config")
 #' )
 #' 
 #' server <- function(input, output, session) {
@@ -22,7 +22,7 @@
 #'   setsdata <- callModule(mod_edit_settings, 
 #'                          "config", 
 #'                          settingsdata = initsetsdata,
-#'                          package = "manageR)
+#'                          package = "manageR")
 #' }
 #' 
 #' shinyApp(ui, server)
