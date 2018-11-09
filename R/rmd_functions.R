@@ -36,6 +36,7 @@ process_name <- function(name) {
 #' @param config list of config from the YAML params
 #'
 #' @importFrom dplyr mutate
+#' @importFrom purrr map_int
 #' @importFrom glue glue
 #' @importFrom htmltools HTML
 #' @importFrom kableExtra column_spec collapse_rows
@@ -48,6 +49,7 @@ process_name <- function(name) {
 process_config <- function(config) {
   lconfig <- config
   lconfig <- lconfig[names(lconfig) != "name"]
+  lconfig[map_int(lconfig, length) == 0] <- NA
   lconfig[lconfig == "NA" | lconfig == ""] <- NA
   lconfig$address3 <- concatenate(lconfig$postal_code, lconfig$city)
   lconfig <- lconfig[c("address1", "address2", "address3", "mobile", "e_mail", "web", "siret")]
