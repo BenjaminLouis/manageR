@@ -128,7 +128,7 @@ process_client <- function(client, billing, info) {
     lbilling[lbilling == "NA" | lbilling == ""] <- NA
     lbilling$where <- concatenate(lbilling$company, lbilling$department)
     lbilling$address3 <- concatenate(lbilling$postal_code, lbilling$city)
-    if (!is.na(lbilling$siret)) { lbilling$siret <- paste("Siret", lconfig$siret)}
+    if (!is.na(lbilling$siret)) { lbilling$siret <- paste("Siret", lbilling$siret)}
     lbilling <- lbilling[c("where", "siret","address1", "address2", "address3", "mobile", "e_mail")]
     lbilling <- lbilling[!is.na(lbilling)]
     lbilling <-  lapply(lbilling, function(x) paste("<p>", x ,"</p>"))
