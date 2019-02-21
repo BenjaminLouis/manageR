@@ -364,14 +364,14 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
       z <- bind_rows(dd, z)
     }
     if (mode == "bill") {
-      dd[dd$ID_Quote == input$which_est, "ID_Bill"] <- input$id_bill
-      z <- dd
-      serv <- filter(dd, ID_Quote == input$which_est)
+       dd[dd$ID_Quote == input$which_est, "ID_Bill"] <- input$id_bill
+       z <- dd
+       serv <- filter(dd, ID_Quote == input$which_est)
       amount <- sum(serv$Quantity*serv$Unit_price)
       x1$ID_Bill[ids] <- input$id_bill
       x1$ID_Client[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), ID_Client)
       x1$ID_Address[ids] <- input$id_billing_address
-      x1$Date[ids] <-  as.character(format(ymd(input$date), "%d-%m-%Y")) 
+      x1$Date[ids] <-  as.character(format(ymd(input$date), "%d-%m-%Y"))
       x1$Amount[ids] <- amount
       x1$Discount[ids] <- pull(filter(quotesdata(), ID_Quote == input$which_est), Discount)
       x1$Deposit[ids] <- input$deposit
@@ -381,6 +381,7 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     }
     newdf <<- x1
     newservices <<- z
+    print(z)
     rv$update <- rv$update + 1
   })
   
