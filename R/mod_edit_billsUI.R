@@ -875,7 +875,8 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     render(tempReport, #output_file = input$output_name,
                       params = params, #output_format = hpdf_document_base(),
                       envir = new.env(parent = globalenv()),
-                      encoding = "UTF-8")
+                      encoding = "UTF-8",
+           quiet = TRUE)
     
     # Close modal dialog
     removeModal()

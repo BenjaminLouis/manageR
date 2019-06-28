@@ -287,3 +287,28 @@ process_bank <- function(info, bankinfo, config) {
   }
   return(HTML(foot))
 }
+
+
+#' Internal function to process annexes. Do not use outside
+#'
+#' @param file character. Path of the annexes file
+#'
+#' @importFrom rmarkdown render
+#' @importFrom xml2 read_html xml_find_all xml_children xml_new_root xml_add_child xml_remove
+#' @importFrom purrr walk
+#' @importFrom htmltools HTML
+#' 
+#' @export
+#' 
+process_annexes <- function(file) {
+  temphtml <- normalizePath(file.path(tempdir(), "annexes.html"), mustWork = FALSE, winslash = "/")
+  render(file, output_format = "html_document", output_file = temphtml, 
+         envir = new.env(parent = globalenv()), quiet = TRUE)
+  
+  toadd <- read_html(temphtml) %>% xml_find_all(".//body") %>% xml_children()
+  newroot <- xml_new_root("div", class = "newpage")
+  walk(toadd, ~xml_add_child(.x = newroot, .value = .x))
+  walk(xml_find_all(newroot, "script"), xml_remove)
+  HTML(gsub("<\\?xml.+\\?>\n", "", as.character(newroot)))
+}
+

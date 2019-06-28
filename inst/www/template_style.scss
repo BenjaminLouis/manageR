@@ -282,3 +282,8 @@ footer {
   font-size: 9pt;
   text-align: right;
 }
+
+.newpage {
+  page-break-before: always;
+  text-align: justify;
+}

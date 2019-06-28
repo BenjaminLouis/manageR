@@ -64,10 +64,14 @@ params:
       bank: "Bank of fake"
       bic: "CCHAJUSAHXX"
       iban: "FR** **** **** **** **** **** ***"
+  annexes:
+    value:
+      isannexes: "Yes"
+      pathannexes: "D://M1906-0016_sofcot.Rmd"
 ---
 
-```{r setup, include=FALSE}
-options(knitr.kable.NA = '')
+```{r my_setup, include=FALSE}
+options(knitr.kable.NA = '', message = FALSE)
 htmltools::tagList(rmarkdown::html_dependency_font_awesome())
 require(manageR)
 ```
@@ -192,6 +196,12 @@ process_bank(info = params$info, bankinfo = params$bankinfo, config = params$con
 
 </footer>
   
-  
 </div>
+
+
+
+```{r echo = FALSE, eval = params$annexes$isannexes == "Yes"}
+process_annexes(file = params$annexes$pathannexes)
+```
+
 
