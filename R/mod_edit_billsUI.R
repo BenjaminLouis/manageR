@@ -43,7 +43,7 @@ mod_edit_billsUI <- function(id, docmode = "bill") {
 #' @param mode either \code{"quote"} to mange quote document or \code{"bill"} (default) to manage bill document
 #' @param settingsdata reactive data with settings information
 #' 
-#' @importFrom shiny reactiveValues reactive observeEvent showModal modalDialog modalButton uiOutput tagList actionButton icon renderUI numericInput hr selectInput dateInput checkboxInput textInput h4 updateNumericInput updateSelectInput updateDateInput updateCheckboxInput updateTextInput radioButtons removeModal selectizeInput textAreaInput observe updateSelectizeInput strong textOutput isolate h5 updateTextAreaInput
+#' @importFrom shiny reactiveValues reactive observeEvent showModal modalDialog modalButton uiOutput tagList actionButton icon renderUI numericInput hr selectInput dateInput checkboxInput textInput h4 updateNumericInput updateSelectInput updateDateInput updateCheckboxInput updateTextInput radioButtons removeModal selectizeInput textAreaInput observe updateSelectizeInput strong textOutput isolate h5 updateTextAreaInput removeUI insertUI
 #' @importFrom dplyr filter pull bind_cols bind_rows select mutate
 #' @importFrom DT renderDataTable datatable
 #' @importFrom lubridate ymd
@@ -51,7 +51,7 @@ mod_edit_billsUI <- function(id, docmode = "bill") {
 #' @importFrom rmarkdown render
 #' @importFrom sass sass sass_import
 #' @importFrom shiny tableOutput renderTable
-#' @importFrom shinyFiles shinyDirButton getVolumes shinyDirChoose parseDirPath
+#' @importFrom shinyFiles shinyDirButton getVolumes shinyDirChoose parseDirPath shinyFilesButton getVolumes shinyFileChoose parseFilePaths
 #' @importFrom shinyjs hide
 #' @importFrom tibble tibble as_tibble add_row
 #' @importFrom xml2 as_list
@@ -641,6 +641,10 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     mylist[[10]] <- tableOutput(ns("totdat"))
     if (mode == "bill") {
       mylist[[11]] <- textAreaInput(ns("comment"), label = "Comment :")
+    } else if (mode == "quote") {
+      mylist[[11]] <- h4("Add annexes")
+      mylist[[12]] <- radioButtons(inputId = ns("add_annexes"), label = NULL, choices = c("Yes", "No"), selected = "No", inline = TRUE)
+      mylist[[13]] <- tags$div(id = 'placeholder')
     }
     addno <- length(mylist)
     mylist[[addno + 1]] <- h4("Output options")
@@ -716,6 +720,58 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
   output$pathoutput <- renderText({
     req(filepath())
     filepath()
+  })
+  
+  
+  # For annexes
+  # -----------
+  # insert/remove UI
+  inserted <- c()
+  observeEvent(input$add_annexes, {
+    btn <- input$add_annexes
+    ns <- session$ns
+    id <- paste0('txt', btn)
+    if (btn == "Yes") {
+      annexes <- TRUE
+      insertUI(
+        selector = '#placeholder',
+        ## wrap element in a div with id for ease of removal
+        ui = tags$div(
+          uiOutput(ns("uiannexes")), 
+          id = id
+        )
+      )
+      inserted <<- c(inserted, id)
+    }
+    if (btn == "No") {
+      annexes <- FALSE
+      removeUI(
+        ## pass in appropriate div id
+        selector = paste0('#', inserted[length(inserted)])
+      )
+      inserted <<- inserted[-length(inserted)]
+    }
+
+  })
+  output$uiannexes <- renderUI({
+    ns <- session$ns
+    tags$div(
+    h5("Directory annexes Rmd file"),
+    fluidRow(
+      column(width = 8, verbatimTextOutput(ns("pathannexes"), placeholder = TRUE)),
+      column(width = 4, shinyFilesButton(id = ns("fileannexes"), label = "Browse...", 
+                                       title = "Annexes file", multiple = FALSE,
+                                       buttonType = "primary"))))
+  })
+  # File choice
+  shinyFileChoose(input, "fileannexes", roots = volumes, session = session)
+  filepathannexes <- reactive({
+    req(input$fileannexes)
+    parseFilePaths(volumes, input$fileannexes)$datapath
+  })
+  output$pathannexes <- renderText({
+    req(filepathannexes())
+    filepathannexes()
   })
   
   # Download button
@@ -812,6 +868,8 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     params$bankinfo <- map(setslist$bankinfo, unlist)
     params$logo <- map(setslist$logo, unlist)
     params$services$tva <- "no"
+    params$annexes$isannexes <- input$add_annexes
+    params$annexes$pathannexes <- filepathannexes()
     
     # knit the document
     render(tempReport, #output_file = input$output_name,
