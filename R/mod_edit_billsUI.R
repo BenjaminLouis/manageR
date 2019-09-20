@@ -837,6 +837,9 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
           x = c("Amount", "Discount", "Net payable"),
           y = c(amount, paste(discount, "%"), net)
         )
+      
+      params$annexes$isannexes <- input$add_annexes
+      params$annexes$pathannexes <- filepathannexes()
     }
     if (mode == "bill") {
       idaddress <- pull(mydf[ids,], ID_Address)
@@ -868,8 +871,6 @@ mod_edit_bills <- function(input, output, session, data = reactive(NULL), servic
     params$bankinfo <- map(setslist$bankinfo, unlist)
     params$logo <- map(setslist$logo, unlist)
     params$services$tva <- "no"
-    params$annexes$isannexes <- input$add_annexes
-    params$annexes$pathannexes <- filepathannexes()
     
     # knit the document
     render(tempReport, #output_file = input$output_name,

@@ -66,8 +66,8 @@ params:
       iban: "FR** **** **** **** **** **** ***"
   annexes:
     value:
-      isannexes: "Yes"
-      pathannexes: "D://M1906-0016_sofcot.Rmd"
+      isannexes: "No"
+      pathannexes: ""
 ---
 
 ```{r my_setup, include=FALSE}

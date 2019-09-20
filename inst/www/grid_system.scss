@@ -1,0 +1,33 @@
+
+/* GRID SYSTEM */
+  /* see http://j4n.co/blog/Creating-your-own-css-grid-system */
+  /*----------------------------------------------------------*/
+  .grid-container{
+    width: 100%;
+  }
+
+/*-- our cleafix hack -- */
+  .row:before, 
+.row:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+[class*='col-'] {
+  float: left; 
+  min-height: 1px; 
+  /*width: 100% / 12;
+  /*-- our gutter -- */
+    /*padding: 0px; */
+    /*background-color: #FFDCDC;*/
+}
+
+@for $i from 1 through 12 {
+  .col-#{$i} {
+    width: 100% / 12 * $i;
+}
+.col-offset-#{$i} {
+  margin-left: 100% / 12 *$i;
+}
+}
